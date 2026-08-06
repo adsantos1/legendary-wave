@@ -1,0 +1,52 @@
+Below is a detailed prompt you can use to instruct an AI (like me or another tool) to create a starting point for your 3D zombie shooter in Godot. The prompt is tailored to your game’s requirements (top-down MOBA-style camera, zombie waves, weapon scavenging, decent graphics, mobile-friendly) and focuses on setting up a basic 3D scene in Godot with GDScript. It’s structured to ensure the AI delivers modular, functional code that you can test and build upon, without overwhelming you with complexity.
+
+---
+
+### Prompt for AI
+"I am building a 3D top-down shooter game in Godot 4.3 (using GDScript) for mobile platforms (Android and iOS). The game has a MOBA-style top-down camera, where the player shoots waves of zombies, navigates around buildings to find weapons, and can toggle between multiple weapons. Graphics should be decent (mid-tier 3D, simple textured models, basic lighting). I am not coding myself; I’m using AI to generate the code and assets.
+
+Please create a basic Godot 4.4 project setup with the following:
+1. **Scene Structure**:
+   - A 3D scene with a player character (simple capsule or model) that moves with WASD/arrow keys and rotates to face the mouse cursor.
+   - A top-down MOBA-style camera that follows the player, positioned above and slightly angled (e.g., 45 degrees), with smooth movement.
+   - One zombie enemy (simple model or cube) that spawns at a fixed point and chases the player using Godot’s Navigation3D system for pathfinding.
+   - A simple building (e.g., a box with a door) with collision, placed in the scene as an obstacle.
+   - A ground plane (textured or colored) for the level.
+   - Basic lighting (e.g., directional light) for decent visuals.
+
+2. **Mechanics**:
+   - Player movement: using a trackpad on the screen.
+   - Zombie AI: The zombie moves toward the player at a slower speed (e.g., ~3 units/sec), avoiding the building using Navigation3D.
+   - Basic shooting: Player can shoot a projectile (e.g., a sphere) with a "fire" button, dealing damage to the zombie (zombie has 10 HP, dies when HP reaches 0).
+   - Weapon pickup: One weapon item (e.g., a pistol model or cube) placed near the building. Player can pick it up by walking over it, enabling shooting.
+   - Placeholder for weapon toggling: A simple script comment or structure to indicate where multiple weapons will be added later.
+
+3. **Assets**:
+   - Use simple placeholders (e.g., Godot’s built-in primitives like cubes/capsules) or suggest free 3D assets from sources like Kenney.nl or OpenGameArt that fit a zombie shooter (e.g., low-poly character, zombie, building).
+   - Apply basic textures or colors to models for a decent look.
+   - Ensure assets are lightweight for mobile performance.
+
+4. **Code Requirements**:
+   - Write clean, modular GDScript code with comments explaining each script’s purpose.
+   - Attach scripts to appropriate nodes (e.g., player, zombie, camera).
+   - Optimize for mobile (e.g., low poly counts, simple shaders).
+   - Include a brief setup guide: how to create a new Godot project, add the scenes/scripts, and run the game.
+
+5. **Output Format**:
+   - Provide a Godot scene tree structure (nodes and their properties).
+   - Include full GDScript code for each script (e.g., player.gd, zombie.gd, camera.gd).
+   - List any external assets and where to download them.
+   - Add a short README-style explanation: how to set up the project, test the scene, and export to Android/iOS later.
+   - Suggest next steps for adding features (e.g., zombie waves, multiple weapons, UI).
+
+6. **Constraints**:
+   - Keep the scene simple to run on mid-tier mobile devices (e.g., no complex shaders or high-poly models).
+   - Avoid external plugins unless critical.
+   - Do not use other engines (e.g., Unity, Unreal) or languages (e.g., JavaScript, C#). Stick to Godot 4.3 and GDScript.
+   - Focus on functionality over polish for this initial setup.
+
+Please deliver the complete setup, including scene tree, scripts, asset suggestions, and setup guide, in a clear, organized format. If any part is too complex, explain how to simplify it for a beginner using AI to build the game."
+
+---
+
+
