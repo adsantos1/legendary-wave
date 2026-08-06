@@ -313,8 +313,8 @@ export class Game {
     // Environment & Barn Roof update
     this.environment.update(this.player.pos, dt);
 
-    // Camera follow
-    this.cameraManager.update(this.player.pos, dt);
+    // Camera follow with ultra-smooth aim offset (zero jostle)
+    this.cameraManager.update(this.player.pos, this.input.gamepadRightStickActive, aimDir, dt);
 
     // UI Updates
     this.ui.update(this.player, this.stats);

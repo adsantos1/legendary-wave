@@ -1,0 +1,39 @@
+====================================================================
+LEGENDARY WAVE - CAMERA ANGLE PRESETS & SPECIFICATIONS NOTE
+====================================================================
+
+This document logs the exact parameters, formulas, and behavior for both
+camera view configurations for reference and easy switching.
+
+--------------------------------------------------------------------
+PRESET 1: "TIGHT ACTION MOBA VIEW" (Focused Up-Close Action)
+--------------------------------------------------------------------
+- Camera Height: 26 units (Y-axis offset)
+- Camera Distance: 33 units (Z-axis offset)
+- Tilt Angle: Math.PI / 5.5 (~32.7 degrees tilt from vertical)
+- Field of View (FOV): 50 degrees
+- Camera Tracking: Direct 1:1 follow centered strictly on the player hero
+- Aim Look-Ahead: Disabled (centered directly on hero position)
+- Scroll Zoom Range: Min Height 16 units -> Max Height 42 units
+- Best Used For: Classic, tight top-down shooter feel with fixed player centering.
+
+--------------------------------------------------------------------
+PRESET 2: "CINEMATIC TACTICAL AIM-LOOKAHEAD VIEW" (Current Active)
+--------------------------------------------------------------------
+- Camera Height: 20 units (Y-axis offset)
+- Camera Distance: 24 units (Z-axis offset)
+- Tilt Angle: Math.PI / 5.2 (~34.5 degrees tilt from vertical)
+- Field of View (FOV): 48 degrees
+- Camera Tracking: Smooth LERP spring-damped interpolation (lerp factor = dt * 8.0)
+- Aim Look-Ahead: Ultra-Smooth Damped Offset (pans 2.5 units ahead toward aim direction with dt * 3.5 lerp - ZERO camera jostle/jumping when right stick is moved or released!)
+- Scroll Zoom Range: Min Height 14 units -> Max Height 38 units
+- Best Used For: Fluid, immersive ARPG / MOBA action with smooth forward visibility toward incoming zombie hordes.
+
+====================================================================
+CODE IMPLEMENTATION REFERENCE (src/game/CameraManager.js)
+====================================================================
+- Height: this.height
+- Distance: this.distance
+- Tilt Angle: this.angle
+- Damped Aim Offset: this.aimOffset.lerp(targetOffset, dt * 3.5)
+- LERP Interpolation: this.currentCamPos.lerp(desiredCamPos, dt * 8.0)

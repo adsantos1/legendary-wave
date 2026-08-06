@@ -200,6 +200,9 @@ export class InputManager {
 
     if (aimLen > 0.2) {
       this.gamepadAimDir = { x: aimX / aimLen, z: aimZ / aimLen };
+      this.gamepadRightStickActive = true;
+    } else {
+      this.gamepadRightStickActive = false;
     }
 
     // 3. Triggers & Shooting (RT for Shooting)
@@ -275,9 +278,8 @@ export class InputManager {
       const normalizedDx = dx / len;
       const normalizedDz = dz / len;
 
-      // If no gamepad right stick aim, fallback facing movement direction
-      if (gpMove && (gpMove.moveX !== 0 || gpMove.moveZ !== 0) && !this.gamepadAimDir) {
-        this.gamepadAimDir = { x: normalizedDx, z: normalizedDz };
+      if (!this.gamepadRightStickActive && (dx !== 0 || dz !== 0)) {
+        this.lastMovementAimDir = { x: normalizedDx, z: normalizedDz };
       }
 
       return { dx: normalizedDx, dz: normalizedDz, isMoving: true };
@@ -286,9 +288,13 @@ export class InputManager {
   }
 
   getAimDirection(camera, playerPos) {
-    // If gamepad right stick was moved
-    if (this.gamepadConnected && this.gamepadAimDir) {
-      return new THREE.Vector3(this.gamepadAimDir.x, 0, this.gamepadAimDir.z).normalize();
+    if (this.gamepadConnected) {
+      if (this.gamepadRightStickActive && this.gamepadAimDir) {
+        return new THREE.Vector3(this.gamepadAimDir.x, 0, this.gamepadAimDir.z).normalize();
+      }
+      if (this.lastMovementAimDir) {
+        return new THREE.Vector3(this.lastMovementAimDir.x, 0, this.lastMovementAimDir.z).normalize();
+      }
     }
 
     // Default Mouse Raycast
