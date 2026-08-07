@@ -402,14 +402,19 @@ export class ZombieManager {
       ui.updateBossHp(this.activeBoss);
     }
 
-    // Spawning logic for regular horde zombies
-    this.spawnTimer += dt;
-    const spawnRate = Math.max(0.4, 2.5 - wave * 0.12);
-    if (this.spawnTimer > spawnRate) {
-      this.spawnTimer = 0;
-      const count = 1 + Math.floor(wave / 2);
-      for (let i = 0; i < count; i++) {
-        this.spawnZombie(player.pos, wave, worldSize);
+    // Spawning logic for regular horde zombies (Balanced for tactical RPG maneuverability)
+    const maxActiveZombies = Math.min(22, 6 + wave * 3); // Max active cap per wave (e.g. Wave 1: 9, Wave 3: 15, Wave 5: 21)
+    if (this.zombies.length < maxActiveZombies) {
+      this.spawnTimer += dt;
+      const spawnRate = Math.max(1.2, 3.2 - wave * 0.15);
+      if (this.spawnTimer > spawnRate) {
+        this.spawnTimer = 0;
+        const count = wave >= 6 ? 2 : 1;
+        for (let i = 0; i < count; i++) {
+          if (this.zombies.length < maxActiveZombies) {
+            this.spawnZombie(player.pos, wave, worldSize);
+          }
+        }
       }
     }
 
