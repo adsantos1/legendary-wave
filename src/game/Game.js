@@ -11,6 +11,9 @@ import { UIManager } from './UIManager';
 
 export class Game {
   constructor() {
+    window.gameInstance = this;
+    console.log('[DEBUG] Game constructor initializing...');
+
     this.container = document.getElementById('game-container');
     this.scene = new THREE.Scene();
     this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
@@ -48,6 +51,7 @@ export class Game {
 
     this.setupEventListeners();
     this.animate = this.animate.bind(this);
+    console.log('[DEBUG] Game constructor completed successfully!');
   }
 
   setupEventListeners() {
@@ -59,11 +63,12 @@ export class Game {
     const startBtn = document.getElementById('start-btn');
     if (startBtn) {
       const handleStart = (e) => {
+        console.log('[DEBUG] PLAY NOW button clicked/touched!', e ? e.type : 'direct');
         if (e && e.type === 'touchstart') e.preventDefault();
         try {
           this.audio.init();
         } catch (err) {
-          console.warn('Audio init warning:', err);
+          console.warn('[DEBUG] Audio init warning:', err);
         }
         this.startNewGame();
       };
@@ -119,13 +124,21 @@ export class Game {
   pauseGame() {
     if (!this.isRunning || this.isPaused) return;
     this.isPaused = true;
-    document.getElementById('pause-screen').classList.remove('hidden');
+    const pauseScr = document.getElementById('pause-screen');
+    if (pauseScr) {
+      pauseScr.classList.remove('hidden');
+      pauseScr.style.display = 'flex';
+    }
   }
 
   resumeGame() {
     if (!this.isRunning || !this.isPaused) return;
     this.isPaused = false;
-    document.getElementById('pause-screen').classList.add('hidden');
+    const pauseScr = document.getElementById('pause-screen');
+    if (pauseScr) {
+      pauseScr.classList.add('hidden');
+      pauseScr.style.display = 'none';
+    }
     this.lastTime = performance.now();
   }
 
@@ -138,28 +151,55 @@ export class Game {
   }
 
   startNewGame() {
-    document.getElementById('start-screen').classList.add('hidden');
-    document.getElementById('game-over-screen').classList.add('hidden');
-    document.getElementById('pause-screen').classList.add('hidden');
-    document.getElementById('ui-overlay').classList.remove('hidden');
+    console.log('[DEBUG] startNewGame called!');
+    try {
+      const startScr = document.getElementById('start-screen');
+      if (startScr) {
+        startScr.classList.add('hidden');
+        startScr.style.display = 'none';
+      }
 
-    this.stats = { score: 0, kills: 0, wave: 1 };
-    this.waveTimer = 0;
-    this.weaponSpawnTimer = 0;
-    this.clearWeaponDrops();
+      const overScr = document.getElementById('game-over-screen');
+      if (overScr) {
+        overScr.classList.add('hidden');
+        overScr.style.display = 'none';
+      }
 
-    this.player.reset();
-    this.zombieManager.clear();
-    this.weaponSystem.clear();
-    this.particles.clear();
+      const pauseScr = document.getElementById('pause-screen');
+      if (pauseScr) {
+        pauseScr.classList.add('hidden');
+        pauseScr.style.display = 'none';
+      }
 
-    this.isRunning = true;
-    this.isPaused = false;
-    this.lastTime = performance.now();
+      const uiOverlay = document.getElementById('ui-overlay');
+      if (uiOverlay) {
+        uiOverlay.classList.remove('hidden');
+        uiOverlay.style.display = 'flex';
+      }
 
-    this.environment.setTimeOfDay(true);
-    this.ui.updateTimeOfDayDisplay(true);
-    this.ui.showWaveBanner(this.stats.wave, true);
+      this.stats = { score: 0, kills: 0, wave: 1 };
+      this.waveTimer = 0;
+      this.weaponSpawnTimer = 0;
+      this.clearWeaponDrops();
+
+      if (this.player) this.player.reset();
+      if (this.zombieManager) this.zombieManager.clear();
+      if (this.weaponSystem) this.weaponSystem.clear();
+      if (this.particles) this.particles.clear();
+
+      this.isRunning = true;
+      this.isPaused = false;
+      this.lastTime = performance.now();
+
+      if (this.environment) this.environment.setTimeOfDay(true);
+      if (this.ui) {
+        this.ui.updateTimeOfDayDisplay(true);
+        this.ui.showWaveBanner(this.stats.wave, true);
+      }
+      console.log('[DEBUG] Game successfully started!');
+    } catch (err) {
+      console.error('[DEBUG CRITICAL ERROR in startNewGame]:', err);
+    }
   }
 
   spawnWeaponDrop() {
@@ -353,12 +393,26 @@ export class Game {
 
   triggerGameOver() {
     this.isRunning = false;
-    document.getElementById('ui-overlay').classList.add('hidden');
-    document.getElementById('game-over-screen').classList.remove('hidden');
+    const uiOverlay = document.getElementById('ui-overlay');
+    if (uiOverlay) {
+      uiOverlay.classList.add('hidden');
+      uiOverlay.style.display = 'none';
+    }
 
-    document.getElementById('final-score').textContent = this.stats.score;
-    document.getElementById('final-wave').textContent = this.stats.wave;
-    document.getElementById('final-kills').textContent = this.stats.kills;
+    const overScr = document.getElementById('game-over-screen');
+    if (overScr) {
+      overScr.classList.remove('hidden');
+      overScr.style.display = 'flex';
+    }
+
+    const finalScore = document.getElementById('final-score');
+    if (finalScore) finalScore.textContent = this.stats.score;
+
+    const finalWave = document.getElementById('final-wave');
+    if (finalWave) finalWave.textContent = this.stats.wave;
+
+    const finalKills = document.getElementById('final-kills');
+    if (finalKills) finalKills.textContent = this.stats.kills;
   }
 
   animate() {
@@ -372,6 +426,7 @@ export class Game {
   }
 
   start() {
+    console.log('[DEBUG] Game loop started!');
     this.lastTime = performance.now();
     this.animate();
   }
