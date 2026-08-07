@@ -13,6 +13,7 @@ export class Zombie {
     this.animTime = Math.random() * 10;
     this.attackCooldown = 0;
     this.animManager = null;
+    this.slipTimer = 0;
 
     this.setupStats();
     this.mesh = this.createMesh();
@@ -20,6 +21,10 @@ export class Zombie {
     this.scene.add(this.mesh);
 
     this.tryLoadGltfModel();
+  }
+
+  applySlip(duration = 3.5) {
+    this.slipTimer = duration;
   }
 
   tryLoadGltfModel() {
@@ -191,7 +196,18 @@ export class Zombie {
   }
 
   update(dt, player, environment, audioSystem, particleSystem) {
-    this.animTime += dt * (this.speed * 4);
+    let effectiveSpeed = this.speed;
+
+    // Slip slow & spin wobble physics
+    if (this.slipTimer > 0) {
+      this.slipTimer -= dt;
+      effectiveSpeed *= 0.25; // 75% movement speed penalty while slipping!
+      if (this.torsoGroup) {
+        this.torsoGroup.rotation.y += dt * 14.0; // Comical slip spin!
+      }
+    }
+
+    this.animTime += dt * (effectiveSpeed * 4);
 
     // Movement toward player
     const dx = player.pos.x - this.pos.x;
@@ -200,7 +216,7 @@ export class Zombie {
 
     if (distToPlayer > 0.9) {
       const angle = Math.atan2(dx, dz);
-      const moveSpeed = this.speed * dt;
+      const moveSpeed = effectiveSpeed * dt;
       const targetX = this.pos.x + Math.sin(angle) * moveSpeed;
       const targetZ = this.pos.z + Math.cos(angle) * moveSpeed;
 

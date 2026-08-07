@@ -8,6 +8,7 @@ import { WeaponSystem, WEAPON_TYPES } from './WeaponSystem';
 import { ParticleSystem } from './ParticleSystem';
 import { ZombieManager } from './ZombieManager';
 import { UIManager } from './UIManager';
+import { BananaSystem } from './BananaSystem';
 
 export class Game {
   constructor() {
@@ -47,6 +48,7 @@ export class Game {
     this.weaponSystem = new WeaponSystem(this.scene, this.particles, this.audio);
     this.player = new Player(this.scene);
     this.zombieManager = new ZombieManager(this.scene);
+    this.bananaSystem = new BananaSystem(this.scene, this.worldSize);
     this.ui = new UIManager();
 
     this.setupEventListeners();
@@ -186,6 +188,7 @@ export class Game {
       if (this.zombieManager) this.zombieManager.clear();
       if (this.weaponSystem) this.weaponSystem.clear();
       if (this.particles) this.particles.clear();
+      if (this.bananaSystem) this.bananaSystem.clear();
 
       this.isRunning = true;
       this.isPaused = false;
@@ -378,12 +381,22 @@ export class Game {
       this.player
     );
 
+    // Banana Consumables & Slip Peel System Update
+    this.bananaSystem.update(dt, this.player, this.zombieManager.zombies, this.audio, this.particles);
+
     // Camera follow with ultra-smooth aim offset (zero jostle)
     this.cameraManager.update(this.player.pos, this.input.gamepadRightStickActive, aimDir, dt);
 
     // UI Updates
     this.ui.update(this.player, this.stats);
-    this.ui.renderMinimap(this.player, this.zombieManager.zombies, this.weaponDrops, this.worldSize);
+    this.ui.renderMinimap(
+      this.player,
+      this.zombieManager.zombies,
+      this.weaponDrops,
+      this.worldSize,
+      this.bananaSystem.bananas,
+      this.bananaSystem.peels
+    );
 
     // Game Over Check
     if (this.player.hp <= 0) {

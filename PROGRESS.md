@@ -66,6 +66,7 @@
 
 ### 5.2 Explosives, Environment Interactables & Turrets
 - [x] **Red Explosive Barrels**: Placed around arena with hazard bands; explode when shot (160 AOE damage, shockwaves, screen shake, and zombie group obliteration!)
+- [x] **Banana Health & Slip Peel Trap System**: Pick up 3D bananas (+35 HP heal) & drop banana peels on floor that cause zombies to slip, spin out of control, and slow down by 75% for 3.5 seconds!
 - [ ] **Deployable Auto-Turrets**: Collectable turret items that automatically target nearby zombies
 - [ ] Barricades & Repairable Fences
 

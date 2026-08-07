@@ -113,7 +113,7 @@ export class UIManager {
     }, 2500);
   }
 
-  renderMinimap(player, zombies, weaponDrops, worldSize) {
+  renderMinimap(player, zombies, weaponDrops, worldSize, bananas = [], peels = []) {
     if (!this.ctxMap || !this.minimapCanvas) return;
     const ctx = this.ctxMap;
     const w = this.minimapCanvas.width;
@@ -136,7 +136,7 @@ export class UIManager {
       ctx.fill();
     }
 
-    // Draw Weapon Drops (Yellow dots)
+    // Draw Weapon Drops (Orange dots)
     ctx.fillStyle = '#ffaa00';
     for (const d of weaponDrops) {
       const mx = centerX + d.mesh.position.x * scale;
@@ -146,7 +146,27 @@ export class UIManager {
       ctx.fill();
     }
 
-    // Draw Player (Green dot with directional sight line)
+    // Draw Bananas (Bright Yellow dots)
+    ctx.fillStyle = '#ffff00';
+    for (const b of bananas) {
+      const mx = centerX + b.pos.x * scale;
+      const my = centerY + b.pos.z * scale;
+      ctx.beginPath();
+      ctx.arc(mx, my, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Draw Banana Peel Traps (Golden Brown dots)
+    ctx.fillStyle = '#e6b800';
+    for (const p of peels) {
+      const mx = centerX + p.pos.x * scale;
+      const my = centerY + p.pos.z * scale;
+      ctx.beginPath();
+      ctx.arc(mx, my, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Draw Player (Green dot with glow)
     const px = centerX + player.pos.x * scale;
     const py = centerY + player.pos.z * scale;
     ctx.fillStyle = '#00ff88';
