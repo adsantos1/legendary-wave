@@ -313,7 +313,7 @@ export class Game {
     // Bullets & Explosive Barrels Update
     this.weaponSystem.update(dt, this.environment, this.zombieManager.zombies, this.cameraManager, this.player);
 
-    // Zombies Update
+    // Zombies & Mega Boss Update
     const killResult = this.zombieManager.update(
       dt,
       this.player,
@@ -321,7 +321,9 @@ export class Game {
       this.audio,
       this.particles,
       this.stats.wave,
-      this.worldSize
+      this.worldSize,
+      this.cameraManager,
+      this.ui
     );
 
     if (killResult && killResult.killed) {

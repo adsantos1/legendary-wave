@@ -32,7 +32,8 @@ export class Zombie {
       .then((gltf) => {
         this.scene.remove(this.mesh);
         this.mesh = gltf.scene;
-        this.mesh.scale.setScalar(this.type === 'tank' ? 1.6 : this.type === 'runner' ? 0.85 : 1.0);
+        const scaleVal = this.type === 'boss' ? 2.6 : this.type === 'tank' ? 1.6 : this.type === 'runner' ? 0.85 : 1.0;
+        this.mesh.scale.setScalar(scaleVal);
         this.mesh.position.copy(this.pos);
         this.scene.add(this.mesh);
 
@@ -48,6 +49,20 @@ export class Zombie {
 
   setupStats() {
     switch (this.type) {
+      case 'boss':
+        this.maxHp = 800 + this.wave * 200;
+        this.speed = 1.4 + this.wave * 0.05;
+        this.damage = 45 + this.wave * 8;
+        this.radius = 1.4;
+        this.skinColor = 0x990022; // Abomination Crimson
+        this.clothColor = 0x110011;
+        this.isBoss = true;
+        this.smashCooldown = 5.0;
+        this.chargeCooldown = 9.0;
+        this.isCharging = false;
+        this.chargeTimer = 0;
+        break;
+
       case 'runner':
         this.maxHp = 30 + this.wave * 8;
         this.speed = 3.5 + this.wave * 0.15;
@@ -89,12 +104,12 @@ export class Zombie {
 
   createMesh() {
     const group = new THREE.Group();
-    const scale = this.type === 'tank' ? 1.5 : this.type === 'runner' ? 0.85 : 1.0;
+    const scale = this.type === 'boss' ? 2.6 : this.type === 'tank' ? 1.5 : this.type === 'runner' ? 0.85 : 1.0;
 
     // Materials
     const skinMat = new THREE.MeshStandardMaterial({ color: this.skinColor, roughness: 0.8 });
     const clothMat = new THREE.MeshStandardMaterial({ color: this.clothColor, roughness: 0.9 });
-    const eyeColor = this.type === 'spitter' ? 0x00ff00 : 0xff0000;
+    const eyeColor = this.type === 'boss' ? 0xff0033 : this.type === 'spitter' ? 0x00ff00 : 0xff0000;
     const eyeMat = new THREE.MeshBasicMaterial({ color: eyeColor });
 
     // --- TORSO ---
@@ -126,61 +141,57 @@ export class Zombie {
     rightEye.position.set(0.07 * scale, 0.02 * scale, 0.14 * scale);
     headGroup.add(rightEye);
 
-    // --- ARMS (Jointed for Zombie Lunge Running) ---
-    const leftArmGroup = new THREE.Group();
-    leftArmGroup.position.set(-0.28 * scale, 0.16 * scale, 0);
-    torsoGroup.add(leftArmGroup);
-    this.leftArmGroup = leftArmGroup;
+    // --- ARMS ---
+    const armGeo = new THREE.CylinderGeometry(0.06 * scale, 0.05 * scale, 0.45 * scale, 6);
 
-    const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.1 * scale, 0.52 * scale, 0.1 * scale), skinMat);
+    const leftArmGroup = new THREE.Group();
+    leftArmGroup.position.set(-0.26 * scale, 0.15 * scale, 0);
+    const leftArm = new THREE.Mesh(armGeo, skinMat);
     leftArm.position.y = -0.2 * scale;
     leftArm.castShadow = true;
     leftArmGroup.add(leftArm);
+    torsoGroup.add(leftArmGroup);
+    this.leftArmGroup = leftArmGroup;
 
     const rightArmGroup = new THREE.Group();
-    rightArmGroup.position.set(0.28 * scale, 0.16 * scale, 0);
-    torsoGroup.add(rightArmGroup);
-    this.rightArmGroup = rightArmGroup;
-
-    const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.1 * scale, 0.52 * scale, 0.1 * scale), skinMat);
+    rightArmGroup.position.set(0.26 * scale, 0.15 * scale, 0);
+    const rightArm = new THREE.Mesh(armGeo, skinMat);
     rightArm.position.y = -0.2 * scale;
     rightArm.castShadow = true;
     rightArmGroup.add(rightArm);
+    torsoGroup.add(rightArmGroup);
+    this.rightArmGroup = rightArmGroup;
 
-    // Initial forward zombie lunge arm pose
-    leftArmGroup.rotation.x = -Math.PI / 3;
-    rightArmGroup.rotation.x = -Math.PI / 3;
+    // --- LEGS ---
+    const legGeo = new THREE.CylinderGeometry(0.07 * scale, 0.06 * scale, 0.48 * scale, 6);
 
-    // --- LEGS (Jointed for Running Animation) ---
     const leftLegGroup = new THREE.Group();
-    leftLegGroup.position.set(-0.14 * scale, 0.28 * scale, 0);
+    leftLegGroup.position.set(-0.12 * scale, 0.25 * scale, 0);
+    const leftLeg = new THREE.Mesh(legGeo, clothMat);
+    leftLeg.position.y = -0.22 * scale;
+    leftLeg.castShadow = true;
+    leftLegGroup.add(leftLeg);
     group.add(leftLegGroup);
     this.leftLegGroup = leftLegGroup;
 
-    const leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.12 * scale, 0.4 * scale, 0.12 * scale), clothMat);
-    leftLeg.position.y = -0.18 * scale;
-    leftLeg.castShadow = true;
-    leftLegGroup.add(leftLeg);
-
     const rightLegGroup = new THREE.Group();
-    rightLegGroup.position.set(0.14 * scale, 0.28 * scale, 0);
+    rightLegGroup.position.set(0.12 * scale, 0.25 * scale, 0);
+    const rightLeg = new THREE.Mesh(legGeo, clothMat);
+    rightLeg.position.y = -0.22 * scale;
+    rightLeg.castShadow = true;
+    rightLegGroup.add(rightLeg);
     group.add(rightLegGroup);
     this.rightLegGroup = rightLegGroup;
 
-    const rightLeg = new THREE.Mesh(new THREE.BoxGeometry(0.12 * scale, 0.4 * scale, 0.12 * scale), clothMat);
-    rightLeg.position.y = -0.18 * scale;
-    rightLeg.castShadow = true;
-    rightLegGroup.add(rightLeg);
-
-    // --- HP BAR ---
+    // HP Bar Outer Box above head
     const hpBgGeo = new THREE.PlaneGeometry(0.7 * scale, 0.08 * scale);
-    const hpBgMat = new THREE.MeshBasicMaterial({ color: 0x222222, side: THREE.DoubleSide });
+    const hpBgMat = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide });
     const hpBg = new THREE.Mesh(hpBgGeo, hpBgMat);
     hpBg.position.set(0, 1.45 * scale, 0);
     group.add(hpBg);
 
     const hpFillGeo = new THREE.PlaneGeometry(0.68 * scale, 0.06 * scale);
-    const hpFillMat = new THREE.MeshBasicMaterial({ color: 0xff3366, side: THREE.DoubleSide });
+    const hpFillMat = new THREE.MeshBasicMaterial({ color: this.type === 'boss' ? 0xff0055 : 0xff3366, side: THREE.DoubleSide });
     const hpFill = new THREE.Mesh(hpFillGeo, hpFillMat);
     hpFill.position.set(0, 1.45 * scale, 0.001);
     group.add(hpFill);
@@ -195,7 +206,7 @@ export class Zombie {
     this.hitFlash = 0.12;
   }
 
-  update(dt, player, environment, audioSystem, particleSystem) {
+  update(dt, player, environment, audioSystem, particleSystem, cameraManager = null) {
     let effectiveSpeed = this.speed;
 
     // Slip slow & spin wobble physics
@@ -204,6 +215,45 @@ export class Zombie {
       effectiveSpeed *= 0.25; // 75% movement speed penalty while slipping!
       if (this.torsoGroup) {
         this.torsoGroup.rotation.y += dt * 14.0; // Comical slip spin!
+      }
+    }
+
+    // --- MEGA BOSS SPECIAL ATTACK PHYSICS ---
+    if (this.isBoss && cameraManager) {
+      // 1. Ground Pound Smash (Shockwave Ring & Knockback)
+      this.smashCooldown -= dt;
+      if (this.smashCooldown <= 0) {
+        this.smashCooldown = 7.5;
+        audioSystem.playExplosion();
+        particleSystem.createExplosion(this.pos);
+        cameraManager.addShake(0.65);
+
+        // AOE Damage to player if nearby
+        const pdx = player.pos.x - this.pos.x;
+        const pdz = player.pos.z - this.pos.z;
+        const pDist = Math.sqrt(pdx * pdx + pdz * pdz);
+        if (pDist < 7.5) {
+          player.takeDamage(35);
+          particleSystem.createBloodSplat(new THREE.Vector3(player.pos.x, 0.5, player.pos.z), 0xff3366, 12);
+        }
+      }
+
+      // 2. Berserker Charge Rush
+      this.chargeCooldown -= dt;
+      if (this.chargeCooldown <= 0 && !this.isCharging) {
+        this.chargeCooldown = 11.0;
+        this.isCharging = true;
+        this.chargeTimer = 1.8;
+      }
+
+      if (this.isCharging) {
+        this.chargeTimer -= dt;
+        effectiveSpeed *= 3.5; // High speed rush charge!
+        particleSystem.createSparkle(this.pos, 0xff0033, 4);
+
+        if (this.chargeTimer <= 0) {
+          this.isCharging = false;
+        }
       }
     }
 
@@ -297,6 +347,8 @@ export class ZombieManager {
     this.scene = scene;
     this.zombies = [];
     this.spawnTimer = 0;
+    this.activeBoss = null;
+    this.bossSpawnedForWave = 0;
   }
 
   spawnZombie(playerPos, wave, worldSize) {
@@ -318,8 +370,39 @@ export class ZombieManager {
     this.zombies.push(zombie);
   }
 
-  update(dt, player, environment, audioSystem, particleSystem, wave, worldSize) {
-    // Spawning logic
+  spawnBoss(playerPos, wave, worldSize, ui) {
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 26;
+
+    let spawnX = playerPos.x + Math.cos(angle) * dist;
+    let spawnZ = playerPos.z + Math.sin(angle) * dist;
+
+    const bound = worldSize - 6;
+    spawnX = Math.max(-bound, Math.min(bound, spawnX));
+    spawnZ = Math.max(-bound, Math.min(bound, spawnZ));
+
+    const boss = new Zombie(this.scene, 'boss', spawnX, spawnZ, wave);
+    this.zombies.push(boss);
+    this.activeBoss = boss;
+
+    if (ui) {
+      ui.showBossBanner(wave);
+    }
+  }
+
+  update(dt, player, environment, audioSystem, particleSystem, wave, worldSize, cameraManager = null, ui = null) {
+    // Check Wave Boss Spawn Condition (Spawns on Wave 5, 10, 15...)
+    if (wave % 5 === 0 && this.bossSpawnedForWave !== wave && (!this.activeBoss || this.activeBoss.hp <= 0)) {
+      this.bossSpawnedForWave = wave;
+      this.spawnBoss(player.pos, wave, worldSize, ui);
+    }
+
+    // Update Boss HUD Health Bar
+    if (ui) {
+      ui.updateBossHp(this.activeBoss);
+    }
+
+    // Spawning logic for regular horde zombies
     this.spawnTimer += dt;
     const spawnRate = Math.max(0.4, 2.5 - wave * 0.12);
     if (this.spawnTimer > spawnRate) {
@@ -333,14 +416,24 @@ export class ZombieManager {
     // Update existing zombies
     for (let i = this.zombies.length - 1; i >= 0; i--) {
       const z = this.zombies[i];
-      z.update(dt, player, environment, audioSystem, particleSystem);
+      z.update(dt, player, environment, audioSystem, particleSystem, cameraManager);
 
       if (z.hp <= 0) {
         particleSystem.createBloodSplat(new THREE.Vector3(z.pos.x, 0.5, z.pos.z), 0x8b0000, 10);
         audioSystem.playZombieDeath();
+
+        const isBossKilled = z.isBoss;
+        if (isBossKilled) {
+          this.activeBoss = null;
+        }
+
         z.destroy();
         this.zombies.splice(i, 1);
-        return { killed: true, score: 20 + wave * 5, type: z.type };
+        return {
+          killed: true,
+          score: isBossKilled ? 500 + wave * 50 : 20 + wave * 5,
+          type: z.type
+        };
       }
     }
     return null;
@@ -351,5 +444,7 @@ export class ZombieManager {
       z.destroy();
     }
     this.zombies = [];
+    this.activeBoss = null;
+    this.bossSpawnedForWave = 0;
   }
 }

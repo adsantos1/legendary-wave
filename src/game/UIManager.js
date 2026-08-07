@@ -17,6 +17,10 @@ export class UIManager {
     this.waveSubtitleBanner = document.getElementById('wave-subtitle-banner');
     this.timeDisplay = document.getElementById('time-display');
 
+    this.bossHpContainer = document.getElementById('boss-hp-container');
+    this.bossHpBar = document.getElementById('boss-hp-bar');
+    this.bossNameDisplay = document.getElementById('boss-name-display');
+
     this.minimapCanvas = document.getElementById('minimap-canvas');
     if (this.minimapCanvas) {
       this.ctxMap = this.minimapCanvas.getContext('2d');
@@ -111,6 +115,36 @@ export class UIManager {
     setTimeout(() => {
       this.waveBanner.classList.remove('show');
     }, 2500);
+  }
+
+  showBossBanner(wave) {
+    if (!this.waveBanner) return;
+    if (this.waveNumberBanner) this.waveNumberBanner.textContent = wave;
+    if (this.waveSubtitleBanner) {
+      this.waveSubtitleBanner.textContent = '⚠️ WARNING: MEGA BOSS ABOMINATION HAS AWAKENED!';
+    }
+    this.waveBanner.classList.add('show');
+    setTimeout(() => {
+      this.waveBanner.classList.remove('show');
+    }, 3500);
+  }
+
+  updateBossHp(bossZombie) {
+    if (!this.bossHpContainer) return;
+    if (bossZombie && bossZombie.hp > 0) {
+      this.bossHpContainer.classList.remove('hidden');
+      this.bossHpContainer.style.display = 'flex';
+      const percent = Math.max(0, bossZombie.hp / bossZombie.maxHp);
+      if (this.bossHpBar) {
+        this.bossHpBar.style.width = `${percent * 100}%`;
+      }
+      if (this.bossNameDisplay) {
+        this.bossNameDisplay.textContent = `MEGA BOSS - ABOMINATION (WAVE ${bossZombie.wave})`;
+      }
+    } else {
+      this.bossHpContainer.classList.add('hidden');
+      this.bossHpContainer.style.display = 'none';
+    }
   }
 
   renderMinimap(player, zombies, weaponDrops, worldSize, bananas = [], peels = []) {

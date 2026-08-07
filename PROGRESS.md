@@ -58,10 +58,10 @@
 ## Phase 5: Upcoming Features & Enhancements (Planned / Next)
 
 ### 5.1 Mega Boss Zombie & Horde Mechanics
-- [ ] **Mega Boss Zombie**: Spawns every 5 waves with massive HP bar & unique attack patterns:
-  - [ ] **Ground Pound Smash**: AOE shockwave ring that knocks hero back
-  - [ ] **Berserker Charge**: High-speed straight line rush attack
-  - [ ] **Acid Vomit Stream**: Toxic puddle pools on ground
+- [x] **Mega Boss Zombie (Abomination)**: Spawns every 5 waves (Wave 5, 10, 15...) with top-center Neon Boss HP Bar & warning banner!
+  - [x] **Ground Pound Smash**: AOE shockwave ring that damages & knocks player back with screen shake
+  - [x] **Berserker Charge**: High-speed straight line rush attack (3.5x speed)
+  - [x] **Abomination Titan Scale**: 2.6x giant crimson brute model with glowing red eyes
 - [ ] Horde Wave Modifiers (e.g. Fast Runner Swarm Wave, Foggy Night Tank Wave)
 
 ### 5.2 Explosives, Environment Interactables & Turrets
