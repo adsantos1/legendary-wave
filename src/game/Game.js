@@ -58,17 +58,27 @@ export class Game {
 
     const startBtn = document.getElementById('start-btn');
     if (startBtn) {
-      startBtn.addEventListener('click', () => {
-        this.audio.init();
+      const handleStart = (e) => {
+        if (e && e.type === 'touchstart') e.preventDefault();
+        try {
+          this.audio.init();
+        } catch (err) {
+          console.warn('Audio init warning:', err);
+        }
         this.startNewGame();
-      });
+      };
+      startBtn.addEventListener('click', handleStart);
+      startBtn.addEventListener('touchstart', handleStart, { passive: false });
     }
 
     const restartBtn = document.getElementById('restart-btn');
     if (restartBtn) {
-      restartBtn.addEventListener('click', () => {
+      const handleRestart = (e) => {
+        if (e && e.type === 'touchstart') e.preventDefault();
         this.startNewGame();
-      });
+      };
+      restartBtn.addEventListener('click', handleRestart);
+      restartBtn.addEventListener('touchstart', handleRestart, { passive: false });
     }
 
     const timeToggleBtn = document.getElementById('time-toggle-btn');
