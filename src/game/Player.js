@@ -21,6 +21,7 @@ export class Player {
       rpg: 8,
       flamethrower: 200
     };
+    this.bananaInventory = 3;
     this.lastShotTime = 0;
     this.dashCooldown = 0;
     this.maxDashCooldown = 2.5; // seconds
@@ -349,6 +350,7 @@ export class Player {
       rpg: 8,
       flamethrower: 200
     };
+    this.bananaInventory = 3;
     this.dashCooldown = 0;
     this.isDashing = false;
     this.mesh.position.set(0, 0, 0);

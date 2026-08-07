@@ -10,6 +10,7 @@ export class InputManager {
     this.weaponSelectTriggered = null;
     this.toggleTimeTriggered = false;
     this.pauseTriggered = false;
+    this.bananaDropTriggered = false;
 
     // Gamepad state
     this.gamepadIndex = null;
@@ -33,6 +34,9 @@ export class InputManager {
       }
       if (e.code === 'Space') {
         this.dashTriggered = true;
+      }
+      if (e.code === 'KeyE' || e.key.toLowerCase() === 'e') {
+        this.bananaDropTriggered = true;
       }
       if (e.key.toLowerCase() === 't') {
         this.toggleTimeTriggered = true;
@@ -244,12 +248,17 @@ export class InputManager {
       this.pauseTriggered = true;
     }
 
-    // 7. Weapon Switch: LB (4) -> Previous, RB (5) / X (2) -> Next, D-Pad -> Direct selection
+    // 7. Weapon Switch: LB (4) -> Previous, RB (5) -> Next, D-Pad -> Direct selection
     if (isJustPressed(4)) { // LB -> Change to Previous Weapon
       this.weaponSelectTriggered = 'prev';
     }
-    if (isJustPressed(5) || isJustPressed(2)) { // RB / X -> Change to Next Weapon
+    if (isJustPressed(5)) { // RB -> Change to Next Weapon
       this.weaponSelectTriggered = 'next';
+    }
+
+    // 8. Drop Banana Peel: X Button (2)
+    if (isJustPressed(2)) { // X Button -> Drop Banana Peel!
+      this.bananaDropTriggered = true;
     }
     if (isJustPressed(12)) this.weaponSelectTriggered = 0; // D-Pad Up -> Pistol
     if (isJustPressed(13)) this.weaponSelectTriggered = 1; // D-Pad Down -> Shotgun
@@ -350,6 +359,14 @@ export class InputManager {
   consumePause() {
     if (this.pauseTriggered) {
       this.pauseTriggered = false;
+      return true;
+    }
+    return false;
+  }
+
+  consumeBananaDrop() {
+    if (this.bananaDropTriggered) {
+      this.bananaDropTriggered = false;
       return true;
     }
     return false;

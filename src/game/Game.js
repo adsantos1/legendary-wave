@@ -275,6 +275,17 @@ export class Game {
       }
     }
 
+    // Check Banana Drop Input (Xbox Controller X Button / E Key)
+    if (this.input.consumeBananaDrop()) {
+      if (this.player.bananaInventory > 0) {
+        this.player.bananaInventory--;
+        this.player.hp = Math.min(this.player.maxHp, this.player.hp + 35);
+        this.audio.playHeal();
+        this.particles.createSparkle(new THREE.Vector3(this.player.pos.x, 1.0, this.player.pos.z), 0x00ff88, 14);
+        this.bananaSystem.dropPeel(this.player.pos.x, this.player.pos.z);
+      }
+    }
+
     // Movement
     const movement = this.input.getMovementVector();
     this.player.update(dt, movement, this.input, this.environment, this.particles, this.audio);

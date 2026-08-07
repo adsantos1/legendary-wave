@@ -135,8 +135,9 @@ export class BananaSystem {
       const dz = player.pos.z - b.pos.z;
       const dist = Math.sqrt(dx * dx + dz * dz);
 
-      // Player Eats Banana (+35 HP & Drop Peel Trap!)
+      // Player Collects/Eats Banana (+35 HP & Drop Peel Trap!)
       if (dist < 1.3) {
+        player.bananaInventory = (player.bananaInventory || 0) + 1;
         player.hp = Math.min(player.maxHp, player.hp + 35);
         audio.playHeal();
         particles.createSparkle(new THREE.Vector3(player.pos.x, 1.0, player.pos.z), 0x00ff88, 14);
