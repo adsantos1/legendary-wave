@@ -526,14 +526,16 @@ export class ZombieManager {
     this.zombies.push(boss);
     this.activeBoss = boss;
 
-    // Spawn Punk Biker Escort alongside Mega Boss!
-    const bikerAngle = angle + Math.PI / 4;
-    let bikerX = playerPos.x + Math.cos(bikerAngle) * 24;
-    let bikerZ = playerPos.z + Math.sin(bikerAngle) * 24;
-    bikerX = Math.max(-bound, Math.min(bound, bikerX));
-    bikerZ = Math.max(-bound, Math.min(bound, bikerZ));
-    const biker = new Zombie(this.scene, 'punk_biker', bikerX, bikerZ, wave);
-    this.zombies.push(biker);
+    // Spawn 2 Punk Zombie Biker Escorts flanking the Mega Boss!
+    for (let offsetAngle of [Math.PI / 4, -Math.PI / 4]) {
+      const bikerAngle = angle + offsetAngle;
+      let bikerX = playerPos.x + Math.cos(bikerAngle) * 24;
+      let bikerZ = playerPos.z + Math.sin(bikerAngle) * 24;
+      bikerX = Math.max(-bound, Math.min(bound, bikerX));
+      bikerZ = Math.max(-bound, Math.min(bound, bikerZ));
+      const biker = new Zombie(this.scene, 'punk_biker', bikerX, bikerZ, wave);
+      this.zombies.push(biker);
+    }
 
     if (ui) {
       ui.showBossBanner(wave);
