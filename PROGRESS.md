@@ -36,9 +36,12 @@
 - [x] Dynamic Day/Night Lighting Cycle (Bright sunlight vs Night navy mode with dense fog)
 - [x] Time toggle key (`T` / `Y` button / HUD Card button)
 - [x] 3D Boundary walls and procedural city obstacles
-- [x] **Enterable Red Barn Building**:
-  - [x] Wooden siding, white trim entrance doorway, hay bales, and warm interior lantern light
-  - [x] **Dynamic Roof Disappear Mechanics**: Roof smoothly fades to 0% opacity when hero enters doorway
+- [x] **4 Distinct 3D Enterable Buildings & Compound Structure**:
+  - [x] **Red Country Barn** at `(20, 12)` ($14 \times 18$, crimson wood, hay bales, warm lantern)
+  - [x] **Tactical Outpost Compound** at `(-24, -18)` ($16 \times 20$, slate stone brick, supply crates, warm lantern)
+  - [x] **Supply Hangar Armory** at `(-26, 22)` ($18 \times 16$, industrial corrugated steel, steel shelves, cyan industrial light)
+  - [x] **Brick Watchtower Refuge** at `(24, -22)` ($14 \times 14$, reinforced red brick, tactical table, warm yellow light)
+  - [x] **Dynamic Roof Disappear Mechanics**: All roofs smoothly fade to 0% opacity when hero enters any building doorway!
 
 ---
 
