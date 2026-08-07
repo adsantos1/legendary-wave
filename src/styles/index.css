@@ -487,24 +487,48 @@ canvas {
   display: none !important;
 }
 
-/* Author Credit */
-.modal-footer-credit {
-  margin-top: 22px;
-  font-size: 14px;
-  color: #94a3b8;
-  font-weight: 500;
+/* Author Credit Bar Outside Modal */
+.author-credit-bar {
+  position: absolute;
+  bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #cbd5e1;
   letter-spacing: 0.5px;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 8px 20px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  z-index: 60;
 }
 
-.credit-link {
-  color: #00e5ff;
+.instagram-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  color: #ffffff !important;
+  font-size: 13px;
   font-weight: 700;
   text-decoration: none;
-  transition: all 0.2s ease;
+  box-shadow: 0 0 15px rgba(220, 39, 67, 0.4);
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.credit-link:hover {
-  color: #00ff88;
-  text-shadow: 0 0 12px rgba(0, 255, 136, 0.6);
-  text-decoration: underline;
+.instagram-btn:hover {
+  transform: translateY(-2px) scale(1.06);
+  box-shadow: 0 0 25px rgba(220, 39, 67, 0.75);
+}
+
+.instagram-icon {
+  width: 16px;
+  height: 16px;
 }
