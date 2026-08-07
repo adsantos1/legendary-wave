@@ -28,6 +28,8 @@ export class Zombie {
   }
 
   tryLoadGltfModel() {
+    if (this.type === 'punk_biker') return; // Custom 3D Motorbike Chopper Mesh
+
     characterLoader.loadModel('/assets/zombie.glb')
       .then((gltf) => {
         this.scene.remove(this.mesh);
@@ -49,6 +51,17 @@ export class Zombie {
 
   setupStats() {
     switch (this.type) {
+      case 'punk_biker':
+        this.maxHp = 350 + this.wave * 60;
+        this.speed = 4.8 + this.wave * 0.15; // Fast Motorbike Rider
+        this.damage = 30 + this.wave * 5;
+        this.radius = 0.85;
+        this.skinColor = 0x226644; // Toxic biker green
+        this.clothColor = 0x111111; // Black leather jacket
+        this.isPunkBiker = true;
+        this.engineSoundTimer = 0;
+        break;
+
       case 'boss':
         this.maxHp = 800 + this.wave * 200;
         this.speed = 1.4 + this.wave * 0.05;
@@ -103,6 +116,115 @@ export class Zombie {
   }
 
   createMesh() {
+    // --- 1. PUNK ZOMBIE BIKER CHOPPER MESH ---
+    if (this.type === 'punk_biker') {
+      const bikerGroup = new THREE.Group();
+
+      const bikeMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.3, metalness: 0.8 });
+      const chromeMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.2, metalness: 0.9 });
+      const tankMat = new THREE.MeshStandardMaterial({ color: 0xcc0033, roughness: 0.3, metalness: 0.6 });
+      const wheelMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.9 });
+
+      // Chassis & Fuel Tank
+      const chassis = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 1.8), bikeMat);
+      chassis.position.set(0, 0.45, 0);
+      chassis.castShadow = true;
+      bikerGroup.add(chassis);
+
+      const tank = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.3, 0.7), tankMat);
+      tank.position.set(0, 0.7, 0.1);
+      bikerGroup.add(tank);
+
+      // Wheels
+      const wheelGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.22, 12);
+
+      const frontWheel = new THREE.Mesh(wheelGeo, wheelMat);
+      frontWheel.rotation.z = Math.PI / 2;
+      frontWheel.position.set(0, 0.35, 0.85);
+      frontWheel.castShadow = true;
+      bikerGroup.add(frontWheel);
+      this.frontWheel = frontWheel;
+
+      const rearWheel = new THREE.Mesh(wheelGeo, wheelMat);
+      rearWheel.rotation.z = Math.PI / 2;
+      rearWheel.position.set(0, 0.35, -0.85);
+      rearWheel.castShadow = true;
+      bikerGroup.add(rearWheel);
+      this.rearWheel = rearWheel;
+
+      // Chrome Exhaust Pipes
+      const pipeLeft = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 1.2), chromeMat);
+      pipeLeft.rotation.x = Math.PI / 2;
+      pipeLeft.position.set(-0.28, 0.35, -0.2);
+      bikerGroup.add(pipeLeft);
+
+      const pipeRight = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 1.2), chromeMat);
+      pipeRight.rotation.x = Math.PI / 2;
+      pipeRight.position.set(0.28, 0.35, -0.2);
+      bikerGroup.add(pipeRight);
+
+      // Headlight
+      const headlight = new THREE.PointLight(0xffffaa, 1.8, 8);
+      headlight.position.set(0, 0.6, 1.0);
+      bikerGroup.add(headlight);
+
+      // --- PUNK ZOMBIE RIDER WITH NEON MOHAWK & LEATHER JACKET ---
+      const riderGroup = new THREE.Group();
+      riderGroup.position.set(0, 0.85, -0.1);
+
+      const mohawkMat = new THREE.MeshBasicMaterial({ color: 0x00ff88 }); // Neon Green Mohawk!
+      const skinMat = new THREE.MeshStandardMaterial({ color: this.skinColor, roughness: 0.8 });
+      const jacketMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.5 });
+      const eyeMat = new THREE.MeshBasicMaterial({ color: 0xff0055 });
+
+      // Torso Leaning Forward
+      const torso = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.5, 0.32), jacketMat);
+      torso.position.y = 0.25;
+      torso.rotation.x = Math.PI / 8; // Leaning over handlebars
+      torso.castShadow = true;
+      riderGroup.add(torso);
+      this.bodyMesh = torso;
+
+      // Head
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.2, 8, 8), skinMat);
+      head.position.set(0, 0.6, 0.1);
+      torso.add(head);
+
+      // Neon Mohawk Spike
+      const mohawk = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.35, 0.32), mohawkMat);
+      mohawk.position.set(0, 0.22, 0);
+      head.add(mohawk);
+
+      // Glowing Red Eyes
+      const leftEye = new THREE.Mesh(new THREE.SphereGeometry(0.04, 6, 6), eyeMat);
+      leftEye.position.set(-0.08, 0.02, 0.16);
+      head.add(leftEye);
+
+      const rightEye = new THREE.Mesh(new THREE.SphereGeometry(0.04, 6, 6), eyeMat);
+      rightEye.position.set(0.08, 0.02, 0.16);
+      head.add(rightEye);
+
+      bikerGroup.add(riderGroup);
+
+      // HP Bar above head
+      const hpBgGeo = new THREE.PlaneGeometry(0.8, 0.08);
+      const hpBgMat = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide });
+      const hpBg = new THREE.Mesh(hpBgGeo, hpBgMat);
+      hpBg.position.set(0, 2.0, 0);
+      bikerGroup.add(hpBg);
+
+      const hpFillGeo = new THREE.PlaneGeometry(0.78, 0.06);
+      const hpFillMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, side: THREE.DoubleSide });
+      const hpFill = new THREE.Mesh(hpFillGeo, hpFillMat);
+      hpFill.position.set(0, 2.0, 0.001);
+      bikerGroup.add(hpFill);
+      this.hpFill = hpFill;
+      this.scale = 1.2;
+
+      return bikerGroup;
+    }
+
+    // --- 2. STANDARD HORDE & BOSS ZOMBIE MESH ---
     const group = new THREE.Group();
     const scale = this.type === 'boss' ? 2.6 : this.type === 'tank' ? 1.5 : this.type === 'runner' ? 0.85 : 1.0;
 
@@ -215,6 +337,25 @@ export class Zombie {
       effectiveSpeed *= 0.25; // 75% movement speed penalty while slipping!
       if (this.torsoGroup) {
         this.torsoGroup.rotation.y += dt * 14.0; // Comical slip spin!
+      }
+    }
+
+    // --- PUNK BIKER PHYSICS ---
+    if (this.isPunkBiker) {
+      if (this.frontWheel && this.rearWheel) {
+        this.frontWheel.rotation.x += dt * 25.0;
+        this.rearWheel.rotation.x += dt * 25.0;
+      }
+      // Exhaust Smoke FX
+      particleSystem.createSparkle(new THREE.Vector3(this.pos.x, 0.3, this.pos.z), 0x555555, 2);
+
+      this.engineSoundTimer = (this.engineSoundTimer || 0) + dt;
+      const dxB = player.pos.x - this.pos.x;
+      const dzB = player.pos.z - this.pos.z;
+      const distB = Math.sqrt(dxB * dxB + dzB * dzB);
+      if (this.engineSoundTimer > 0.25 && distB < 20) {
+        this.engineSoundTimer = 0;
+        audioSystem.playMotorcycleEngine();
       }
     }
 
@@ -385,6 +526,15 @@ export class ZombieManager {
     this.zombies.push(boss);
     this.activeBoss = boss;
 
+    // Spawn Punk Biker Escort alongside Mega Boss!
+    const bikerAngle = angle + Math.PI / 4;
+    let bikerX = playerPos.x + Math.cos(bikerAngle) * 24;
+    let bikerZ = playerPos.z + Math.sin(bikerAngle) * 24;
+    bikerX = Math.max(-bound, Math.min(bound, bikerX));
+    bikerZ = Math.max(-bound, Math.min(bound, bikerZ));
+    const biker = new Zombie(this.scene, 'punk_biker', bikerX, bikerZ, wave);
+    this.zombies.push(biker);
+
     if (ui) {
       ui.showBossBanner(wave);
     }
@@ -403,7 +553,7 @@ export class ZombieManager {
     }
 
     // Spawning logic for regular horde zombies (Balanced for tactical RPG maneuverability)
-    const maxActiveZombies = Math.min(22, 6 + wave * 3); // Max active cap per wave (e.g. Wave 1: 9, Wave 3: 15, Wave 5: 21)
+    const maxActiveZombies = Math.min(22, 6 + wave * 3);
     if (this.zombies.length < maxActiveZombies) {
       this.spawnTimer += dt;
       const spawnRate = Math.max(1.2, 3.2 - wave * 0.15);
@@ -436,7 +586,7 @@ export class ZombieManager {
         this.zombies.splice(i, 1);
         return {
           killed: true,
-          score: isBossKilled ? 500 + wave * 50 : 20 + wave * 5,
+          score: isBossKilled ? 500 + wave * 50 : z.isPunkBiker ? 150 : 20 + wave * 5,
           type: z.type
         };
       }

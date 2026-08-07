@@ -65,6 +65,7 @@
   - [x] **Ground Pound Smash**: AOE shockwave ring that damages & knocks player back with screen shake
   - [x] **Berserker Charge**: High-speed straight line rush attack (3.5x speed)
   - [x] **Abomination Titan Scale**: 2.6x giant crimson brute model with glowing red eyes
+- [x] **Punk Zombie Biker Escort**: High-speed Motorbike Biker with Neon Green Mohawk, Studded Leather Jacket, Chopper mesh, exhaust smoke FX, and engine roar audio that spawns alongside the Mega Boss!
 - [ ] Horde Wave Modifiers (e.g. Fast Runner Swarm Wave, Foggy Night Tank Wave)
 
 ### 5.2 Explosives, Environment Interactables & Turrets
