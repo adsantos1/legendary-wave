@@ -11,6 +11,7 @@
 - [x] Responsive 60 FPS WebGL renderer with anti-aliasing & post-processing shadows
 - [x] Mobile Web Touch Controls (Virtual Joystick + Action buttons)
 - [x] Sound FX synthesis engine (Web Audio API for guns, explosions, damage, wave clears)
+- [x] Author Credit & Instagram Link ("Created by Arnold Santos" -> https://www.instagram.com/arnoldsantosart)
 
 ---
 
