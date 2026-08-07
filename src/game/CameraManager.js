@@ -2,13 +2,10 @@ import * as THREE from 'three';
 
 export class CameraManager {
   constructor() {
-    this.height = 20;
-    this.distance = 24;
+    this.height = 20; // Optimal tactical height
+    this.distance = 24; // Optimal tactical distance
     this.angle = Math.PI / 5.2; // ~34.5 deg tilt angle
     this.shakeIntensity = 0;
-
-    this.minHeight = 14;
-    this.maxHeight = 38;
 
     this.currentCamPos = new THREE.Vector3(0, 20, 24);
     this.currentLookAt = new THREE.Vector3(0, 0, 0);
@@ -20,23 +17,6 @@ export class CameraManager {
       0.1,
       400
     );
-
-    this.setupZoomControls();
-  }
-
-  setupZoomControls() {
-    window.addEventListener('wheel', (e) => {
-      const zoomSpeed = 1.8;
-      if (e.deltaY > 0) {
-        // Zoom out
-        this.height = Math.min(this.maxHeight, this.height + zoomSpeed);
-        this.distance = Math.min(this.maxHeight * 1.2, this.distance + zoomSpeed * 1.2);
-      } else {
-        // Zoom in
-        this.height = Math.max(this.minHeight, this.height - zoomSpeed);
-        this.distance = Math.max(this.minHeight * 1.2, this.distance - zoomSpeed * 1.2);
-      }
-    }, { passive: true });
   }
 
   update(playerPos, isRightStickActive, aimDir, dt) {

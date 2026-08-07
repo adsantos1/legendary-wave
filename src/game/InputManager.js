@@ -59,6 +59,15 @@ export class InputManager {
       if (e.button === 0) this.mouse.down = false;
     });
 
+    // Mouse wheel weapon cycle listener
+    window.addEventListener('wheel', (e) => {
+      if (e.deltaY > 0) {
+        this.weaponSelectTriggered = 'next';
+      } else if (e.deltaY < 0) {
+        this.weaponSelectTriggered = 'prev';
+      }
+    }, { passive: true });
+
     // Gamepad connection listeners
     window.addEventListener('gamepadconnected', (e) => {
       console.log('Gamepad connected:', e.gamepad.id);
