@@ -280,7 +280,7 @@ export class Environment {
     group.add(frontLeft);
     this.walls.push(frontLeft);
 
-    const frontRight = new THREE.Mesh(new THREE.BoxGeometry(sideWallWidth, wallHeight, wallThickness), frontRight);
+    const frontRight = new THREE.Mesh(new THREE.BoxGeometry(sideWallWidth, wallHeight, wallThickness), barnWoodMat);
     frontRight.position.set(barnWidth / 2 - sideWallWidth / 2, wallHeight / 2, barnDepth / 2 - wallThickness / 2);
     frontRight.castShadow = true;
     frontRight.receiveShadow = true;
