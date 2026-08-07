@@ -486,3 +486,25 @@ canvas {
 .hidden {
   display: none !important;
 }
+
+/* Author Credit */
+.modal-footer-credit {
+  margin-top: 22px;
+  font-size: 14px;
+  color: #94a3b8;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.credit-link {
+  color: #00e5ff;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.credit-link:hover {
+  color: #00ff88;
+  text-shadow: 0 0 12px rgba(0, 255, 136, 0.6);
+  text-decoration: underline;
+}
