@@ -65,7 +65,7 @@
 - [ ] Horde Wave Modifiers (e.g. Fast Runner Swarm Wave, Foggy Night Tank Wave)
 
 ### 5.2 Explosives, Environment Interactables & Turrets
-- [ ] **Red Explosive Barrels**: Placed around arena; explode when shot by player or zombies
+- [x] **Red Explosive Barrels**: Placed around arena with hazard bands; explode when shot (160 AOE damage, shockwaves, screen shake, and zombie group obliteration!)
 - [ ] **Deployable Auto-Turrets**: Collectable turret items that automatically target nearby zombies
 - [ ] Barricades & Repairable Fences
 

@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="description" content="Legendary Zombie Survivor 3D - A fast-paced top-down MOBA style zombie wave survival game in WebGL.">
+  <meta name="description"
+    content="Legendary Zombie Survivor 3D - A fast-paced top-down MOBA style zombie wave survival game in WebGL.">
   <title>Legendary Wave - 3D Zombie Survivor MOBA</title>
 </head>
+
 <body>
 
   <div id="game-container">
@@ -63,14 +66,17 @@
         <!-- Player Status -->
         <div class="status-panel glass-panel">
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span class="hud-label" style="margin: 0;">HP: <span id="hp-display" style="color: #fff; font-weight: 800;">100</span></span>
-            <span class="hud-label" style="margin: 0;">AMMO: <span id="ammo-display" style="color: var(--primary); font-weight: 800;">∞</span></span>
+            <span class="hud-label" style="margin: 0;">HP: <span id="hp-display"
+                style="color: #fff; font-weight: 800;">100</span></span>
+            <span class="hud-label" style="margin: 0;">AMMO: <span id="ammo-display"
+                style="color: var(--primary); font-weight: 800;">∞</span></span>
           </div>
           <div class="hp-bar-outer">
             <div class="hp-bar-inner" id="hp-bar"></div>
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2px;">
-            <span class="hud-label" style="margin: 0; font-size: 10px;">WEAPON: <span id="weapon-display" style="color: var(--accent);">PISTOL</span></span>
+            <span class="hud-label" style="margin: 0; font-size: 10px;">WEAPON: <span id="weapon-display"
+                style="color: var(--accent);">PISTOL</span></span>
             <span class="hud-label" style="margin: 0; font-size: 10px;">DASH [SPACE]</span>
           </div>
           <div class="dash-cooldown-bar" id="dash-bar"></div>
@@ -98,7 +104,8 @@
     <div id="start-screen" class="screen-overlay">
       <div class="modal-content glass-panel">
         <h1 class="modal-title brand">LEGENDARY WAVE</h1>
-        <p class="modal-desc">Top-down MOBA Action Shooter with Dynamic Day/Night Cycle. Survive endless waves of undead, scavenge epic weapons, and defend the city!</p>
+        <p class="modal-desc">Top-down Action Shooter with Dynamic Day/Night Cycle. Survive endless waves of undead,
+          scavenge epic weapons, and defend the city!</p>
 
         <div class="controls-grid">
           <div class="ctrl-item"><span>WASD / Left Stick</span> - Move</div>
@@ -115,8 +122,10 @@
       <!-- Author Credit Bar Outside Modal -->
       <div class="author-credit-bar">
         <span>Created by Arnold Santos</span>
-        <a href="https://www.instagram.com/arnoldsantosart" target="_blank" rel="noopener noreferrer" class="instagram-btn" title="Follow Arnold Santos on Instagram">
-          <svg class="instagram-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <a href="https://www.instagram.com/arnoldsantosart" target="_blank" rel="noopener noreferrer"
+          class="instagram-btn" title="Follow Arnold Santos on Instagram">
+          <svg class="instagram-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
             <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
             <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
@@ -133,7 +142,8 @@
         <p class="modal-desc">Take a breather, check your weapons, or adjust strategy.</p>
         <div style="display: flex; gap: 15px; justify-content: center;">
           <button class="btn-primary" id="resume-btn">RESUME</button>
-          <button class="btn-primary" id="pause-restart-btn" style="background: rgba(255, 51, 102, 0.3); border: 1px solid var(--danger); color: #fff;">RESTART</button>
+          <button class="btn-primary" id="pause-restart-btn"
+            style="background: rgba(255, 51, 102, 0.3); border: 1px solid var(--danger); color: #fff;">RESTART</button>
         </div>
       </div>
     </div>
@@ -166,4 +176,5 @@
 
   <script type="module" src="/src/main.js"></script>
 </body>
+
 </html>

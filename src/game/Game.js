@@ -232,14 +232,22 @@ export class Game {
 
     // Shooting
     if (this.input.isShooting()) {
-      const shot = this.weaponSystem.shoot(this.player, this.input.mouse, this.cameraManager.camera, aimDir, this.zombieManager.zombies);
+      const shot = this.weaponSystem.shoot(
+        this.player,
+        this.input.mouse,
+        this.cameraManager.camera,
+        aimDir,
+        this.zombieManager.zombies,
+        this.environment,
+        this.cameraManager
+      );
       if (shot) {
         this.cameraManager.addShake(this.player.currentWeapon === 'rpg' ? 0.45 : 0.15);
       }
     }
 
-    // Bullets Update
-    this.weaponSystem.update(dt, this.environment, this.zombieManager.zombies);
+    // Bullets & Explosive Barrels Update
+    this.weaponSystem.update(dt, this.environment, this.zombieManager.zombies, this.cameraManager, this.player);
 
     // Zombies Update
     const killResult = this.zombieManager.update(
@@ -294,24 +302,31 @@ export class Game {
       }
     }
 
-    // Check T key toggle for Day/Night
+    // Check T key toggle for Day/Night (Locked to Day time for now)
     if (this.input.consumeToggleTime()) {
       this.toggleTimeOfDay();
     }
 
-    // Wave Advancement
+    // Wave Advancement (Day Mode Locked)
     this.waveTimer += dt;
     if (this.waveTimer > 32) {
       this.waveTimer = 0;
       this.stats.wave++;
       this.player.hp = Math.min(this.player.maxHp, this.player.hp + 30);
       this.audio.playWaveClear();
-      this.toggleTimeOfDay();
-      this.ui.showWaveBanner(this.stats.wave, this.environment.isDay);
+      this.ui.showWaveBanner(this.stats.wave, true);
     }
 
-    // Environment & Barn Roof update
-    this.environment.update(this.player.pos, dt);
+    // Environment & Barn Roof & Explosive Barrels update
+    this.environment.update(
+      this.player.pos,
+      dt,
+      this.particles,
+      this.audio,
+      this.zombieManager.zombies,
+      this.cameraManager,
+      this.player
+    );
 
     // Camera follow with ultra-smooth aim offset (zero jostle)
     this.cameraManager.update(this.player.pos, this.input.gamepadRightStickActive, aimDir, dt);

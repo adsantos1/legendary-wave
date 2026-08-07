@@ -1,32 +1,33 @@
 import * as THREE from 'three';
 
 export const WEAPON_TYPES = {
-  pistol: { id: 'pistol', name: 'Pistol', ammo: Infinity, maxAmmo: Infinity, fireRate: 260, damage: 28, spread: 0.02, speed: 55, color: 0x00ff88, key: 1 },
-  shotgun: { id: 'shotgun', name: 'Shotgun', ammo: 24, maxAmmo: 24, fireRate: 850, damage: 16, pellets: 7, spread: 0.14, speed: 45, color: 0xffaa00, key: 2 },
-  rifle: { id: 'rifle', name: 'Assault Rifle', ammo: 60, maxAmmo: 60, fireRate: 130, damage: 36, spread: 0.015, speed: 65, color: 0x00e5ff, key: 3 },
-  smg: { id: 'smg', name: 'SMG', ammo: 100, maxAmmo: 100, fireRate: 90, damage: 14, spread: 0.06, speed: 50, color: 0xa855f7, key: 4 },
-  sniper: { id: 'sniper', name: 'Plasma Sniper', ammo: 12, maxAmmo: 12, fireRate: 1300, damage: 120, spread: 0.0, speed: 90, color: 0xff3366, key: 5 },
-  minigun: { id: 'minigun', name: 'Minigun', ammo: 150, maxAmmo: 150, fireRate: 65, damage: 18, spread: 0.08, speed: 58, color: 0xffff00, key: 6 },
-  rpg: { id: 'rpg', name: 'RPG Rocket', ammo: 8, maxAmmo: 8, fireRate: 1400, damage: 180, aoeRadius: 5.5, spread: 0.01, speed: 38, color: 0xff5500, key: 7 },
-  flamethrower: { id: 'flamethrower', name: 'Flamethrower', ammo: 200, maxAmmo: 200, fireRate: 45, damage: 10, spread: 0.22, speed: 28, color: 0xff4400, key: 8 }
+  pistol: { id: 'pistol', name: 'PISTOL', damage: 24, fireRate: 0.28, speed: 45, spread: 0.03, color: 0x00ff88, nameColor: '#00ff88' },
+  shotgun: { id: 'shotgun', name: 'SHOTGUN', damage: 18, fireRate: 0.7, speed: 40, spread: 0.16, pellets: 6, color: 0xffaa00, nameColor: '#ffaa00' },
+  rifle: { id: 'rifle', name: 'ASSAULT RIFLE', damage: 32, fireRate: 0.12, speed: 52, spread: 0.05, color: 0x00e5ff, nameColor: '#00e5ff' },
+  smg: { id: 'smg', name: 'SMG', damage: 16, fireRate: 0.07, speed: 42, spread: 0.1, color: 0xff00ff, nameColor: '#ff00ff' },
+  sniper: { id: 'sniper', name: 'PLASMA SNIPER', damage: 130, fireRate: 1.1, speed: 75, spread: 0.005, color: 0x3388ff, nameColor: '#3388ff' },
+  minigun: { id: 'minigun', name: 'MINIGUN', damage: 22, fireRate: 0.05, speed: 50, spread: 0.14, color: 0xffff00, nameColor: '#ffff00' },
+  rpg: { id: 'rpg', name: 'RPG ROCKET', damage: 180, fireRate: 1.4, speed: 32, spread: 0.02, color: 0xff4400, nameColor: '#ff4400', isRpg: true, aoeRadius: 5.5 },
+  flamethrower: { id: 'flamethrower', name: 'FLAMETHROWER', damage: 8, fireRate: 0.04, speed: 18, spread: 0.35, color: 0xff7700, nameColor: '#ff7700', isFlame: true }
 };
 
 export class WeaponSystem {
-  constructor(scene, audioSystem, particleSystem) {
+  constructor(scene, particles, audio) {
     this.scene = scene;
-    this.audio = audioSystem;
-    this.particles = particleSystem;
+    this.particles = particles;
+    this.audio = audio;
     this.bullets = [];
     this.raycaster = new THREE.Raycaster();
-    this.mouseNDC = new THREE.Vector2();
     this.groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   }
 
-  getMouseWorldDirection(mouseScreen, camera, playerPos) {
-    this.mouseNDC.x = (mouseScreen.x / window.innerWidth) * 2 - 1;
-    this.mouseNDC.y = -(mouseScreen.y / window.innerHeight) * 2 + 1;
+  getMouseWorldDirection(mouse, camera, playerPos) {
+    const mouseNDC = new THREE.Vector2(
+      (mouse.x / window.innerWidth) * 2 - 1,
+      -(mouse.y / window.innerHeight) * 2 + 1
+    );
 
-    this.raycaster.setFromCamera(this.mouseNDC, camera);
+    this.raycaster.setFromCamera(mouseNDC, camera);
     const target = new THREE.Vector3();
     this.raycaster.ray.intersectPlane(this.groundPlane, target);
 
@@ -38,48 +39,64 @@ export class WeaponSystem {
   }
 
   triggerExplosion(pos, radius, damage, zombies) {
-    this.particles.createExplosion(pos, radius);
+    // 1. Particle Explosion FX
+    this.particles.createExplosion(pos);
+
+    // 2. Play Heavy Sound
     this.audio.playExplosion();
 
-    // Damage all zombies within radius
+    // 3. AOE Damage to all Zombies in blast radius
     for (const z of zombies) {
       const dx = z.pos.x - pos.x;
       const dz = z.pos.z - pos.z;
       const dist = Math.sqrt(dx * dx + dz * dz);
 
-      if (dist <= radius + z.radius) {
-        // Falloff damage calculation based on distance from epicenter
-        const factor = Math.max(0.4, 1 - (dist / radius));
-        const finalDamage = Math.round(damage * factor);
-        z.takeDamage(finalDamage);
-        this.particles.createBloodSplat(new THREE.Vector3(z.pos.x, 0.7, z.pos.z), 0x8b0000, 6);
+      if (dist <= radius) {
+        const falloff = 1 - (dist / radius) * 0.5;
+        const blastDamage = Math.floor(damage * falloff);
+        z.takeDamage(blastDamage);
+        this.particles.createBloodSplat(new THREE.Vector3(z.pos.x, 0.7, z.pos.z), 0xff3366, 8);
       }
     }
   }
 
-  shoot(player, mouseScreen, camera, overrideAimDir = null, zombies = []) {
-    const now = Date.now();
+  shoot(player, mouse, camera, overrideAimDir = null, zombies = [], environment = null, cameraManager = null) {
+    const now = performance.now() / 1000;
     const weaponData = WEAPON_TYPES[player.currentWeapon];
     if (!weaponData) return false;
 
     if (now - player.lastShotTime < weaponData.fireRate) return false;
-    if (player.ammo[player.currentWeapon] <= 0 && player.ammo[player.currentWeapon] !== Infinity) return false;
 
-    player.lastShotTime = now;
+    // Ammo Check
+    if (player.ammo[player.currentWeapon] <= 0) return false;
     if (player.ammo[player.currentWeapon] !== Infinity) {
       player.ammo[player.currentWeapon]--;
     }
 
-    const aimDir = overrideAimDir || this.getMouseWorldDirection(mouseScreen, camera, player.pos);
-    const muzzlePos = new THREE.Vector3(player.pos.x, 0.6, player.pos.z).add(aimDir.clone().multiplyScalar(0.6));
+    player.lastShotTime = now;
 
-    this.audio.playShoot(weaponData.id);
+    // Aim Vector
+    let aimDir = overrideAimDir;
+    if (!aimDir) {
+      aimDir = this.getMouseWorldDirection(mouse, camera, player.pos);
+    }
 
-    // 1. FLAMETHROWER SPECIAL SHOOTING LOGIC
-    if (weaponData.id === 'flamethrower') {
+    // Muzzle flash origin
+    const muzzlePos = new THREE.Vector3(player.pos.x, 0.55, player.pos.z).add(aimDir.clone().multiplyScalar(0.7));
+
+    // Sound FX
+    if (weaponData.id === 'rpg') {
+      this.audio.playRpgLaunch();
+    } else if (weaponData.id === 'flamethrower') {
+      this.audio.playFlamethrower();
+    } else {
+      this.audio.playShoot(weaponData.id);
+    }
+
+    // 1. FLAMETHROWER CONE SPRAY
+    if (weaponData.isFlame) {
       this.particles.createFlameStream(muzzlePos, aimDir);
 
-      // Damage all zombies in a cone in front of player
       const coneRange = 7.5;
       for (const z of zombies) {
         const dx = z.pos.x - player.pos.x;
@@ -89,12 +106,30 @@ export class WeaponSystem {
         if (dist <= coneRange) {
           const zDir = new THREE.Vector3(dx, 0, dz).normalize();
           const dot = aimDir.dot(zDir);
-          if (dot > 0.75) { // ~40 degree cone
+          if (dot > 0.75) {
             z.takeDamage(weaponData.damage);
             this.particles.createBloodSplat(new THREE.Vector3(z.pos.x, 0.6, z.pos.z), 0xff4400, 3);
           }
         }
       }
+
+      // Check Barrels in Flamethrower cone
+      if (environment && environment.barrels) {
+        for (const barrel of environment.barrels) {
+          if (barrel.isExploded) continue;
+          const bdx = barrel.pos.x - player.pos.x;
+          const bdz = barrel.pos.z - player.pos.z;
+          const bDist = Math.sqrt(bdx * bdx + bdz * bdz);
+          if (bDist <= coneRange) {
+            const bDir = new THREE.Vector3(bdx, 0, bdz).normalize();
+            if (aimDir.dot(bDir) > 0.75) {
+              barrel.takeDamage(weaponData.damage * 0.5);
+              this.particles.createSparkle(barrel.pos, 0xffaa00, 2);
+            }
+          }
+        }
+      }
+
       return true;
     }
 
@@ -116,7 +151,6 @@ export class WeaponSystem {
       let bulletMesh;
 
       if (weaponData.id === 'rpg') {
-        // Rocket mesh model
         const group = new THREE.Group();
         const rocketGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.5, 8);
         const rocketMat = new THREE.MeshStandardMaterial({ color: 0xff5500, roughness: 0.3 });
@@ -160,7 +194,7 @@ export class WeaponSystem {
     return true;
   }
 
-  update(dt, environment, zombies) {
+  update(dt, environment, zombies, cameraManager = null, player = null) {
     for (let i = this.bullets.length - 1; i >= 0; i--) {
       const b = this.bullets[i];
       b.pos.x += b.dir.x * b.speed * dt;
@@ -173,6 +207,39 @@ export class WeaponSystem {
       if (b.isRpg) {
         this.particles.createSparkle(b.pos, 0xff7700, 2);
       }
+
+      // Check Explosive Barrel Direct Hit
+      let barrelHit = false;
+      if (environment && environment.barrels) {
+        for (let k = environment.barrels.length - 1; k >= 0; k--) {
+          const barrel = environment.barrels[k];
+          if (barrel.isExploded) continue;
+
+          const bdx = b.pos.x - barrel.pos.x;
+          const bdz = b.pos.z - barrel.pos.z;
+          const bDist = Math.sqrt(bdx * bdx + bdz * bdz);
+
+          if (bDist < (barrel.radius + 0.3)) {
+            barrelHit = true;
+            if (b.isRpg) {
+              this.triggerExplosion(b.pos, b.aoeRadius, b.damage, zombies);
+              barrel.explode(this.particles, this.audio, zombies, cameraManager, player);
+            } else {
+              barrel.takeDamage(b.damage);
+              this.audio.playHit();
+              this.particles.createSparkle(b.pos, 0xffaa00, 5);
+              if (barrel.hp <= 0) {
+                barrel.explode(this.particles, this.audio, zombies, cameraManager, player);
+              }
+            }
+
+            this.scene.remove(b.mesh);
+            this.bullets.splice(i, 1);
+            break;
+          }
+        }
+      }
+      if (barrelHit) continue;
 
       // Check Wall Hit
       if (environment.checkCollision(b.pos, 0.15) || b.life <= 0 || b.distTraveled > 90) {
