@@ -1,14 +1,14 @@
 import * as THREE from 'three';
 
 export const WEAPON_TYPES = {
-  pistol: { id: 'pistol', key: '1', name: 'PISTOL', damage: 24, fireRate: 0.28, speed: 45, spread: 0.03, color: 0x00ff88, nameColor: '#00ff88' },
-  shotgun: { id: 'shotgun', key: '2', name: 'SHOTGUN', damage: 18, fireRate: 0.7, speed: 40, spread: 0.16, pellets: 6, color: 0xffaa00, nameColor: '#ffaa00' },
-  rifle: { id: 'rifle', key: '3', name: 'ASSAULT RIFLE', damage: 32, fireRate: 0.12, speed: 52, spread: 0.05, color: 0x00e5ff, nameColor: '#00e5ff' },
-  smg: { id: 'smg', key: '4', name: 'SMG', damage: 16, fireRate: 0.07, speed: 42, spread: 0.1, color: 0xff00ff, nameColor: '#ff00ff' },
-  sniper: { id: 'sniper', key: '5', name: 'PLASMA SNIPER', damage: 130, fireRate: 1.1, speed: 75, spread: 0.005, color: 0x3388ff, nameColor: '#3388ff' },
-  minigun: { id: 'minigun', key: '6', name: 'MINIGUN', damage: 22, fireRate: 0.05, speed: 50, spread: 0.14, color: 0xffff00, nameColor: '#ffff00' },
-  rpg: { id: 'rpg', key: '7', name: 'RPG ROCKET', damage: 180, fireRate: 1.4, speed: 32, spread: 0.02, color: 0xff4400, nameColor: '#ff4400', isRpg: true, aoeRadius: 5.5 },
-  flamethrower: { id: 'flamethrower', key: '8', name: 'FLAMETHROWER', damage: 8, fireRate: 0.04, speed: 18, spread: 0.35, color: 0xff7700, nameColor: '#ff7700', isFlame: true }
+  pistol: { id: 'pistol', key: '1', name: 'PISTOL', damage: 24, fireRate: 0.28, speed: 45, spread: 0.03, maxAmmo: Infinity, color: 0x00ff88, nameColor: '#00ff88' },
+  shotgun: { id: 'shotgun', key: '2', name: 'SHOTGUN', damage: 18, fireRate: 0.7, speed: 40, spread: 0.16, pellets: 6, maxAmmo: 36, color: 0xffaa00, nameColor: '#ffaa00' },
+  rifle: { id: 'rifle', key: '3', name: 'ASSAULT RIFLE', damage: 32, fireRate: 0.12, speed: 52, spread: 0.05, maxAmmo: 120, color: 0x00e5ff, nameColor: '#00e5ff' },
+  smg: { id: 'smg', key: '4', name: 'SMG', damage: 16, fireRate: 0.07, speed: 42, spread: 0.1, maxAmmo: 180, color: 0xff00ff, nameColor: '#ff00ff' },
+  sniper: { id: 'sniper', key: '5', name: 'PLASMA SNIPER', damage: 130, fireRate: 1.1, speed: 75, spread: 0.005, maxAmmo: 18, color: 0x3388ff, nameColor: '#3388ff' },
+  minigun: { id: 'minigun', key: '6', name: 'MINIGUN', damage: 22, fireRate: 0.05, speed: 50, spread: 0.14, maxAmmo: 250, color: 0xffff00, nameColor: '#ffff00' },
+  rpg: { id: 'rpg', key: '7', name: 'RPG ROCKET', damage: 180, fireRate: 1.4, speed: 32, spread: 0.02, maxAmmo: 12, color: 0xff4400, nameColor: '#ff4400', isRpg: true, aoeRadius: 5.5 },
+  flamethrower: { id: 'flamethrower', key: '8', name: 'FLAMETHROWER', damage: 8, fireRate: 0.04, speed: 18, spread: 0.35, maxAmmo: 300, color: 0xff7700, nameColor: '#ff7700', isFlame: true }
 };
 
 export class WeaponSystem {
@@ -67,8 +67,14 @@ export class WeaponSystem {
 
     if (now - player.lastShotTime < weaponData.fireRate) return false;
 
-    // Ammo Check
-    if (player.ammo[player.currentWeapon] <= 0) return false;
+    // Strict Ammo Validation Check
+    const curAmmo = player.ammo[player.currentWeapon];
+    if (player.currentWeapon !== 'pistol') {
+      if (typeof curAmmo !== 'number' || isNaN(curAmmo) || curAmmo <= 0) {
+        return false;
+      }
+    }
+
     if (player.ammo[player.currentWeapon] !== Infinity) {
       player.ammo[player.currentWeapon]--;
     }

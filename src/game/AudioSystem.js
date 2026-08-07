@@ -221,6 +221,14 @@ export class AudioSystem {
     });
   }
 
+  playRpgLaunch() {
+    this.playShoot('rpg');
+  }
+
+  playFlamethrower() {
+    this.playShoot('flamethrower');
+  }
+
   startAmbientSynth() {
     if (!this.ctx) return;
     try {
