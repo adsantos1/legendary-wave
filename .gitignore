@@ -18,6 +18,7 @@ jspm_packages/
 dist/
 dist-ssr/
 *.local
+vite.config.js.timestamp*
 
 # Editor & OS directories
 .vscode/*

@@ -41,7 +41,7 @@ export class Game {
     this.cameraManager = new CameraManager();
     this.environment = new Environment(this.scene, this.worldSize);
     this.particles = new ParticleSystem(this.scene);
-    this.weaponSystem = new WeaponSystem(this.scene, this.audio, this.particles);
+    this.weaponSystem = new WeaponSystem(this.scene, this.particles, this.audio);
     this.player = new Player(this.scene);
     this.zombieManager = new ZombieManager(this.scene);
     this.ui = new UIManager();
