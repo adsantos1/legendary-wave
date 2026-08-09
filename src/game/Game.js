@@ -397,8 +397,8 @@ export class Game {
     // Banana Consumables & Slip Peel System Update
     this.bananaSystem.update(dt, this.player, this.zombieManager.zombies, this.audio, this.particles);
 
-    // Camera follow with ultra-smooth aim offset (zero jostle)
-    this.cameraManager.update(this.player.pos, this.input.gamepadRightStickActive, aimDir, dt);
+    // Camera follow with ultra-smooth aim offset & terrain Y tracking
+    this.cameraManager.update(this.player.pos, this.input.gamepadRightStickActive, aimDir, dt, this.environment);
 
     // UI Updates
     this.ui.update(this.player, this.stats);

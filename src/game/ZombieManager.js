@@ -417,8 +417,12 @@ export class Zombie {
         this.pos.z = targetZ;
       }
 
+      if (environment && environment.getTerrainHeight) {
+        this.pos.y = environment.getTerrainHeight(this.pos.x, this.pos.z);
+      }
+
       this.mesh.position.copy(this.pos);
-      this.mesh.lookAt(player.pos.x, 0, player.pos.z);
+      this.mesh.lookAt(player.pos.x, this.pos.y, player.pos.z);
 
       // --- ZOMBIE LUNGE RUNNING ANIMATION PHYSICS ---
       const stride = Math.sin(this.animTime);

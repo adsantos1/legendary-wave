@@ -19,8 +19,10 @@ export class CameraManager {
     );
   }
 
-  update(playerPos, isRightStickActive, aimDir, dt) {
+  update(playerPos, isRightStickActive, aimDir, dt, environment = null) {
     if (!playerPos) return;
+
+    const terrainY = (environment && environment.getTerrainHeight) ? environment.getTerrainHeight(playerPos.x, playerPos.z) : 0;
 
     // 1. Calculate Target Aim Offset (Smooth 2.5 unit offset ONLY when aiming)
     const targetOffset = new THREE.Vector3(0, 0, 0);
@@ -35,13 +37,13 @@ export class CameraManager {
     // 2. Desired Focal Look Target & Camera Position
     const desiredLookTarget = new THREE.Vector3(
       playerPos.x + this.aimOffset.x,
-      0.5,
+      0.5 + terrainY,
       playerPos.z + this.aimOffset.z
     );
 
     const desiredCamPos = new THREE.Vector3(
       playerPos.x + this.aimOffset.x + Math.sin(this.angle) * this.distance * 0.28,
-      this.height,
+      this.height + terrainY,
       playerPos.z + this.aimOffset.z + Math.cos(this.angle) * this.distance * 0.95
     );
 

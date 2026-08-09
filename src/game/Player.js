@@ -263,9 +263,9 @@ export class Player {
         }
       }
 
-      const bound = environment.worldSize - 2;
-      this.pos.x = Math.max(-bound, Math.min(bound, this.pos.x));
-      this.pos.z = Math.max(-bound, Math.min(bound, this.pos.z));
+      if (environment && environment.getTerrainHeight) {
+        this.pos.y = environment.getTerrainHeight(this.pos.x, this.pos.z);
+      }
 
       this.mesh.position.copy(this.pos);
 
