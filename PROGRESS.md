@@ -42,6 +42,9 @@
   - [x] **Supply Hangar Armory** at `(-26, 22)` ($18 \times 16$, industrial corrugated steel, steel shelves, cyan industrial light)
   - [x] **Brick Watchtower Refuge** at `(24, -22)` ($14 \times 14$, reinforced red brick, tactical table, warm yellow light)
   - [x] **Dynamic Roof Disappear Mechanics**: All roofs smoothly fade to 0% opacity when hero enters any building doorway!
+- [x] **Seamless Right-Side World Expansion**:
+  - [x] **Woodland Forest Region** ($X: 35 \text{ to } 95$): Mossy forest floor, dirt trail, 45+ 3D procedural pine trees, fallen wooden logs, and mossy boulders.
+  - [x] **Glacial Mountain Yeti Cave Lair** ($X: 95 \text{ to } 145$): Elevated rocky snow peaks, stone cave archway ($X = 132$), glowing cyan ice stalagmites & crystals, and mountain snowfall particles.
 
 ---
 

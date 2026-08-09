@@ -155,16 +155,20 @@ export class UIManager {
 
     ctx.clearRect(0, 0, w, h);
 
-    // Map Scale (World coordinate to canvas)
-    const scale = w / (worldSize * 2);
-    const centerX = w / 2;
-    const centerY = h / 2;
+    // Expanded Map Scale (World coordinates X[-65 to 145], Z[-65 to 65])
+    const minX = -65, maxX = 145;
+    const minZ = -65, maxZ = 65;
+    const scaleX = w / (maxX - minX);
+    const scaleY = h / (maxZ - minZ);
+
+    const getMapX = (x) => (x - minX) * scaleX;
+    const getMapY = (z) => (z - minZ) * scaleY;
 
     // Draw Zombies (Red dots)
     ctx.fillStyle = '#ff3366';
     for (const z of zombies) {
-      const mx = centerX + z.pos.x * scale;
-      const my = centerY + z.pos.z * scale;
+      const mx = getMapX(z.pos.x);
+      const my = getMapY(z.pos.z);
       ctx.beginPath();
       ctx.arc(mx, my, 2.5, 0, Math.PI * 2);
       ctx.fill();
@@ -173,8 +177,8 @@ export class UIManager {
     // Draw Weapon Drops (Orange dots)
     ctx.fillStyle = '#ffaa00';
     for (const d of weaponDrops) {
-      const mx = centerX + d.mesh.position.x * scale;
-      const my = centerY + d.mesh.position.z * scale;
+      const mx = getMapX(d.mesh.position.x);
+      const my = getMapY(d.mesh.position.z);
       ctx.beginPath();
       ctx.arc(mx, my, 3, 0, Math.PI * 2);
       ctx.fill();
@@ -183,8 +187,8 @@ export class UIManager {
     // Draw Bananas (Bright Yellow dots)
     ctx.fillStyle = '#ffff00';
     for (const b of bananas) {
-      const mx = centerX + b.pos.x * scale;
-      const my = centerY + b.pos.z * scale;
+      const mx = getMapX(b.pos.x);
+      const my = getMapY(b.pos.z);
       ctx.beginPath();
       ctx.arc(mx, my, 3, 0, Math.PI * 2);
       ctx.fill();
@@ -193,16 +197,16 @@ export class UIManager {
     // Draw Banana Peel Traps (Golden Brown dots)
     ctx.fillStyle = '#e6b800';
     for (const p of peels) {
-      const mx = centerX + p.pos.x * scale;
-      const my = centerY + p.pos.z * scale;
+      const mx = getMapX(p.pos.x);
+      const my = getMapY(p.pos.z);
       ctx.beginPath();
       ctx.arc(mx, my, 2, 0, Math.PI * 2);
       ctx.fill();
     }
 
     // Draw Player (Green dot with glow)
-    const px = centerX + player.pos.x * scale;
-    const py = centerY + player.pos.z * scale;
+    const px = getMapX(player.pos.x);
+    const py = getMapY(player.pos.z);
     ctx.fillStyle = '#00ff88';
     ctx.shadowColor = '#00ff88';
     ctx.shadowBlur = 6;

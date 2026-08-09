@@ -128,7 +128,7 @@ export class Environment {
     this.walls = [];
     this.obstacles = [];
     this.barrels = [];
-    this.isDay = true; // DAY TIME ONLY FOR NOW
+    this.isDay = true;
 
     this.enterableBuildings = []; // Stores { roofMat, bounds } for all enterable buildings
 
@@ -138,7 +138,7 @@ export class Environment {
   init() {
     // Fog (Daytime Bright Sky)
     this.scene.background = new THREE.Color(0x78a6db);
-    this.scene.fog = new THREE.FogExp2(0x78a6db, 0.003);
+    this.scene.fog = new THREE.FogExp2(0x78a6db, 0.0025);
 
     // Ambient Lighting
     this.ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
@@ -151,39 +151,252 @@ export class Environment {
     this.dirLight.shadow.mapSize.width = 2048;
     this.dirLight.shadow.mapSize.height = 2048;
     this.dirLight.shadow.camera.near = 0.5;
-    this.dirLight.shadow.camera.far = 250;
-    this.dirLight.shadow.camera.left = -this.worldSize;
-    this.dirLight.shadow.camera.right = this.worldSize;
-    this.dirLight.shadow.camera.top = this.worldSize;
-    this.dirLight.shadow.camera.bottom = -this.worldSize;
+    this.dirLight.shadow.camera.far = 300;
+    this.dirLight.shadow.camera.left = -150;
+    this.dirLight.shadow.camera.right = 150;
+    this.dirLight.shadow.camera.top = 150;
+    this.dirLight.shadow.camera.bottom = -150;
     this.scene.add(this.dirLight);
 
-    // Ground Plane
-    const floorGeo = new THREE.PlaneGeometry(this.worldSize * 2, this.worldSize * 2);
+    // Main Town Ground Plane (-65 to +35 X, -65 to +65 Z)
+    const townFloorGeo = new THREE.PlaneGeometry(100, 130);
     this.floorMat = new THREE.MeshStandardMaterial({
       color: 0x2e4232,
       roughness: 0.85,
       metalness: 0.1
     });
-    const floor = new THREE.Mesh(floorGeo, this.floorMat);
-    floor.rotation.x = -Math.PI / 2;
-    floor.receiveShadow = true;
-    this.scene.add(floor);
+    const townFloor = new THREE.Mesh(townFloorGeo, this.floorMat);
+    townFloor.position.set(-15, 0, 0);
+    townFloor.rotation.x = -Math.PI / 2;
+    townFloor.receiveShadow = true;
+    this.scene.add(townFloor);
 
-    // Grid Overlay
-    this.gridHelper = new THREE.GridHelper(this.worldSize * 2, 60, 0x00ff88, 0x1f2e24);
-    this.gridHelper.position.y = 0.02;
+    // Grid Overlay for Town Arena
+    this.gridHelper = new THREE.GridHelper(130, 60, 0x00ff88, 0x1f2e24);
+    this.gridHelper.position.set(-15, 0.02, 0);
     this.gridHelper.material.transparent = true;
-    this.gridHelper.material.opacity = 0.2;
+    this.gridHelper.material.opacity = 0.18;
     this.scene.add(this.gridHelper);
 
-    // Build Environment
+    // Build Regions
     this.createBoundaryWalls();
     this.createAllEnterableBuildings();
     this.createObstacles();
     this.createExplosiveBarrels();
+    this.createWoodlandForest();
+    this.createMountainYetiLair();
 
     this.setTimeOfDay(true);
+  }
+
+  createWoodlandForest() {
+    // 1. Woodland Mossy Forest Ground (X: 35 to 95, Z: -65 to +65)
+    const forestFloorGeo = new THREE.PlaneGeometry(60, 130);
+    const forestFloorMat = new THREE.MeshStandardMaterial({
+      color: 0x1c3a21, // Mossy dark pine forest grass
+      roughness: 0.9,
+      metalness: 0.05
+    });
+    const forestFloor = new THREE.Mesh(forestFloorGeo, forestFloorMat);
+    forestFloor.position.set(65, 0.01, 0);
+    forestFloor.rotation.x = -Math.PI / 2;
+    forestFloor.receiveShadow = true;
+    this.scene.add(forestFloor);
+
+    // Forest Transition Dirt Trail
+    const trailGeo = new THREE.PlaneGeometry(60, 12);
+    const trailMat = new THREE.MeshStandardMaterial({ color: 0x5a4332, roughness: 0.95 });
+    const trail = new THREE.Mesh(trailGeo, trailMat);
+    trail.position.set(65, 0.03, 0);
+    trail.rotation.x = -Math.PI / 2;
+    trail.receiveShadow = true;
+    this.scene.add(trail);
+
+    // 2. 3D Procedural Pine Trees (45 trees)
+    const trunkMat = new THREE.MeshStandardMaterial({ color: 0x4a3219, roughness: 0.9 });
+    const leafColors = [0x1a4023, 0x24542d, 0x15361d];
+
+    for (let i = 0; i < 48; i++) {
+      const tx = 38 + Math.random() * 52;
+      const tz = -58 + Math.random() * 116;
+
+      // Keep dirt trail pathway clear near Z = 0
+      if (Math.abs(tz) < 6 && tx < 85) continue;
+
+      const treeGroup = new THREE.Group();
+      treeGroup.position.set(tx, 0, tz);
+
+      // Trunk
+      const trunkHeight = 2.5 + Math.random() * 1.5;
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.45, trunkHeight, 8), trunkMat);
+      trunk.position.y = trunkHeight / 2;
+      trunk.castShadow = true;
+      trunk.receiveShadow = true;
+      treeGroup.add(trunk);
+
+      // 3-Tier Layered Cone Canopy
+      const leafMat = new THREE.MeshStandardMaterial({
+        color: leafColors[i % leafColors.length],
+        roughness: 0.8
+      });
+
+      for (let tier = 0; tier < 3; tier++) {
+        const radius = 1.8 - tier * 0.4;
+        const cHeight = 2.2 - tier * 0.3;
+        const cone = new THREE.Mesh(new THREE.ConeGeometry(radius, cHeight, 8), leafMat);
+        cone.position.y = trunkHeight + tier * 1.4;
+        cone.castShadow = true;
+        cone.receiveShadow = true;
+        treeGroup.add(cone);
+      }
+
+      this.scene.add(treeGroup);
+
+      // Add trunk collision
+      const collisionMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, trunkHeight, 6), trunkMat);
+      collisionMesh.position.set(tx, trunkHeight / 2, tz);
+      collisionMesh.userData.isWall = true;
+      this.walls.push(collisionMesh);
+    }
+
+    // 3. Fallen Logs & Boulders
+    const logMat = new THREE.MeshStandardMaterial({ color: 0x3d2714, roughness: 0.9 });
+    const boulderMat = new THREE.MeshStandardMaterial({ color: 0x4a554d, roughness: 0.8 });
+
+    for (let i = 0; i < 8; i++) {
+      const lx = 42 + Math.random() * 45;
+      const lz = -50 + Math.random() * 100;
+      if (Math.abs(lz) < 6) continue;
+
+      const log = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.4, 3.5, 8), logMat);
+      log.position.set(lx, 0.35, lz);
+      log.rotation.z = Math.PI / 2;
+      log.rotation.y = Math.random() * Math.PI;
+      log.castShadow = true;
+      this.scene.add(log);
+      this.walls.push(log);
+    }
+
+    for (let i = 0; i < 10; i++) {
+      const bx = 40 + Math.random() * 50;
+      const bz = -52 + Math.random() * 104;
+      if (Math.abs(bz) < 6) continue;
+
+      const boulder = new THREE.Mesh(new THREE.DodecahedronGeometry(0.8 + Math.random() * 0.7, 1), boulderMat);
+      boulder.position.set(bx, 0.6, bz);
+      boulder.castShadow = true;
+      this.scene.add(boulder);
+      this.walls.push(boulder);
+    }
+  }
+
+  createMountainYetiLair() {
+    // 1. Glacial Mountain Snow Terrain Base (X: 95 to 145, Z: -65 to +65)
+    const mountainFloorGeo = new THREE.PlaneGeometry(50, 130);
+    const mountainFloorMat = new THREE.MeshStandardMaterial({
+      color: 0xcae4f0, // Icy glacial snow white/blue
+      roughness: 0.7,
+      metalness: 0.1
+    });
+    const mountainFloor = new THREE.Mesh(mountainFloorGeo, mountainFloorMat);
+    mountainFloor.position.set(120, 0.02, 0);
+    mountainFloor.rotation.x = -Math.PI / 2;
+    mountainFloor.receiveShadow = true;
+    this.scene.add(mountainFloor);
+
+    // 2. Layered Rocky Snow Mountain Peaks & Cliffs
+    const rockMat = new THREE.MeshStandardMaterial({ color: 0x2e3b46, roughness: 0.8 });
+    const snowCapMat = new THREE.MeshStandardMaterial({ color: 0xf0f8ff, roughness: 0.5 });
+
+    // Ridge Terraces behind & framing the Yeti cave
+    const ridgePositions = [
+      { x: 135, z: -40, w: 22, h: 8.0, d: 35 },
+      { x: 135, z: 40, w: 22, h: 8.0, d: 35 },
+      { x: 142, z: 0, w: 12, h: 10.0, d: 50 },
+      { x: 110, z: -55, w: 30, h: 6.0, d: 20 },
+      { x: 110, z: 55, w: 30, h: 6.0, d: 20 },
+      { x: 125, z: -25, w: 18, h: 5.5, d: 18 },
+      { x: 125, z: 25, w: 18, h: 5.5, d: 18 }
+    ];
+
+    for (const r of ridgePositions) {
+      const rockBlock = new THREE.Mesh(new THREE.BoxGeometry(r.w, r.h, r.d), rockMat);
+      rockBlock.position.set(r.x, r.h / 2, r.z);
+      rockBlock.castShadow = true;
+      rockBlock.receiveShadow = true;
+      rockBlock.userData.isWall = true;
+      this.scene.add(rockBlock);
+      this.walls.push(rockBlock);
+
+      // Thick Snow Cap Top
+      const snowCap = new THREE.Mesh(new THREE.BoxGeometry(r.w + 0.2, 0.6, r.d + 0.2), snowCapMat);
+      snowCap.position.set(r.x, r.h + 0.3, r.z);
+      snowCap.receiveShadow = true;
+      this.scene.add(snowCap);
+    }
+
+    // 3. THE YETI GLACIAL CAVE LAIR ARCHWAY (X: 132, Z: 0)
+    const caveGroup = new THREE.Group();
+    caveGroup.position.set(132, 0, 0);
+
+    // Dark Cavernous Entrance Interior
+    const cavernInterior = new THREE.Mesh(
+      new THREE.BoxGeometry(10, 7, 12),
+      new THREE.MeshBasicMaterial({ color: 0x03060a })
+    );
+    cavernInterior.position.set(4, 3.5, 0);
+    caveGroup.add(cavernInterior);
+
+    // Cave Stone Archway Pillars
+    const archPillarLeft = new THREE.Mesh(new THREE.BoxGeometry(4, 7, 4), rockMat);
+    archPillarLeft.position.set(0, 3.5, -4.5);
+    archPillarLeft.castShadow = true;
+    caveGroup.add(archPillarLeft);
+    archPillarLeft.userData.isWall = true;
+    this.walls.push(archPillarLeft);
+
+    const archPillarRight = new THREE.Mesh(new THREE.BoxGeometry(4, 7, 4), rockMat);
+    archPillarRight.position.set(0, 3.5, 4.5);
+    archPillarRight.castShadow = true;
+    caveGroup.add(archPillarRight);
+    archPillarRight.userData.isWall = true;
+    this.walls.push(archPillarRight);
+
+    const archLintel = new THREE.Mesh(new THREE.BoxGeometry(4, 3.5, 13), rockMat);
+    archLintel.position.set(0, 7.25, 0);
+    archLintel.castShadow = true;
+    caveGroup.add(archLintel);
+
+    // Snow Mantle on Archway
+    const archSnow = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.8, 13.6), snowCapMat);
+    archSnow.position.set(0, 9.2, 0);
+    caveGroup.add(archSnow);
+
+    // Glowing Cyan Ice Stalagmites & Crystals framing entrance
+    const crystalMat = new THREE.MeshStandardMaterial({
+      color: 0x00e5ff,
+      emissive: 0x00e5ff,
+      emissiveIntensity: 0.8,
+      roughness: 0.2,
+      metalness: 0.9,
+      transparent: true,
+      opacity: 0.9
+    });
+
+    for (let i = 0; i < 6; i++) {
+      const crystal = new THREE.Mesh(new THREE.ConeGeometry(0.4, 2.2 + (i % 3) * 0.5, 5), crystalMat);
+      const side = (i % 2 === 0) ? -3.2 : 3.2;
+      crystal.position.set(-0.5, 1.1 + (i % 3) * 0.2, side + Math.floor(i / 2) * 0.8 - 0.8);
+      crystal.rotation.z = (i % 2 === 0) ? 0.2 : -0.2;
+      caveGroup.add(crystal);
+    }
+
+    // Glowing Ice Light inside Cave
+    const caveLight = new THREE.PointLight(0x00e5ff, 3.5, 20);
+    caveLight.position.set(2, 4, 0);
+    caveGroup.add(caveLight);
+
+    this.scene.add(caveGroup);
   }
 
   createExplosiveBarrels() {
@@ -199,7 +412,11 @@ export class Environment {
       { x: 32, z: -28 },
       { x: -18, z: 32 },
       { x: 25, z: 5 },
-      { x: -28, z: -25 }
+      { x: -28, z: -25 },
+      // Woodland Barrels
+      { x: 55, z: 15 },
+      { x: 72, z: -18 },
+      { x: 88, z: 10 }
     ];
 
     for (const pos of positions) {
@@ -392,7 +609,16 @@ export class Environment {
       }
     }
 
-    // 2. Explosive Barrels Update & Cleanup
+    // 2. Mountain Snow Particle FX in Woodland & Mountain regions (X > 35)
+    if (playerPos && playerPos.x > 35 && particles) {
+      particles.createSparkle(
+        new THREE.Vector3(playerPos.x + (Math.random() - 0.5) * 20, 2 + Math.random() * 4, playerPos.z + (Math.random() - 0.5) * 20),
+        0xe0f7fa,
+        1
+      );
+    }
+
+    // 3. Explosive Barrels Update & Cleanup
     for (let i = this.barrels.length - 1; i >= 0; i--) {
       const b = this.barrels[i];
       b.update(dt);
@@ -405,10 +631,10 @@ export class Environment {
   }
 
   setTimeOfDay(isDay = true) {
-    this.isDay = true; // LOCKED TO DAY TIME FOR NOW
+    this.isDay = true;
     this.scene.background.setHex(0x78a6db);
     this.scene.fog.color.setHex(0x78a6db);
-    this.scene.fog.density = 0.003;
+    this.scene.fog.density = 0.0025;
 
     this.ambientLight.color.setHex(0xffffff);
     this.ambientLight.intensity = 0.95;
@@ -418,12 +644,12 @@ export class Environment {
     this.dirLight.position.set(50, 100, 30);
 
     this.floorMat.color.setHex(0x2e4232);
-    this.gridHelper.material.opacity = 0.2;
+    this.gridHelper.material.opacity = 0.18;
   }
 
   toggleTimeOfDay() {
     this.setTimeOfDay(true);
-    return true; // Always return Day
+    return true;
   }
 
   createBoundaryWalls() {
@@ -432,15 +658,16 @@ export class Environment {
       roughness: 0.7,
       metalness: 0.2
     });
-    const half = this.worldSize;
-    const height = 6;
+
+    const height = 7;
     const thickness = 3;
 
+    // Expanded Map Bounds: X [-65 to +145], Z [-65 to +65]
     const wallPositions = [
-      { x: 0, z: -half, w: half * 2, d: thickness },
-      { x: 0, z: half, w: half * 2, d: thickness },
-      { x: -half, z: 0, w: thickness, d: half * 2 },
-      { x: half, z: 0, w: thickness, d: half * 2 }
+      { x: 40, z: -65, w: 210, d: thickness }, // North Wall
+      { x: 40, z: 65, w: 210, d: thickness },  // South Wall
+      { x: -65, z: 0, w: thickness, d: 130 },  // West Wall
+      { x: 145, z: 0, w: thickness, d: 130 }   // East Mountain Wall
     ];
 
     for (const p of wallPositions) {
@@ -462,13 +689,8 @@ export class Environment {
       color: 0x34455b,
       roughness: 0.8
     });
-    const accentMat = new THREE.MeshStandardMaterial({
-      color: 0x00ff88,
-      emissive: 0x00ff88,
-      emissiveIntensity: 0.3
-    });
 
-    // Decorative Sandbag & Cover Barricades
+    // Decorative Sandbag & Cover Barricades in Town
     for (let i = 0; i < 10; i++) {
       const angle = (i * Math.PI * 2) / 10;
       const dist = 14 + (i % 3) * 6;
