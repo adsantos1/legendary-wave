@@ -136,12 +136,12 @@ export class Environment {
   }
 
   getTerrainHeight(x, z) {
-    // 3D Sloped Mountain Hill Path (X: 88 to 122, Z: -25 to +25)
-    if (x >= 88 && x <= 122 && Math.abs(z) <= 25) {
-      const progress = (x - 88) / 34;
-      return progress * 4.2; // Smooth incline up to Y = 4.2m!
-    } else if (x > 122) {
-      return 4.2; // Elevated Yeti Mountain Plateau
+    // 3D Sloped Mountain Hill Path (X: 190 to 235, Z: -30 to +30)
+    if (x >= 190 && x <= 235 && Math.abs(z) <= 30) {
+      const progress = (x - 190) / 45;
+      return progress * 5.0; // Smooth incline up to Y = 5.0m!
+    } else if (x > 235) {
+      return 5.0; // Elevated Yeti Mountain Plateau
     }
     return 0.0;
   }
@@ -149,7 +149,7 @@ export class Environment {
   init() {
     // Fog (Daytime Bright Sky)
     this.scene.background = new THREE.Color(0x78a6db);
-    this.scene.fog = new THREE.FogExp2(0x78a6db, 0.0025);
+    this.scene.fog = new THREE.FogExp2(0x78a6db, 0.002);
 
     // Ambient Lighting
     this.ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
@@ -157,34 +157,34 @@ export class Environment {
 
     // Directional Sunlight
     this.dirLight = new THREE.DirectionalLight(0xfff5ea, 1.25);
-    this.dirLight.position.set(50, 100, 30);
+    this.dirLight.position.set(80, 120, 40);
     this.dirLight.castShadow = true;
     this.dirLight.shadow.mapSize.width = 2048;
     this.dirLight.shadow.mapSize.height = 2048;
     this.dirLight.shadow.camera.near = 0.5;
-    this.dirLight.shadow.camera.far = 300;
-    this.dirLight.shadow.camera.left = -150;
-    this.dirLight.shadow.camera.right = 150;
-    this.dirLight.shadow.camera.top = 150;
-    this.dirLight.shadow.camera.bottom = -150;
+    this.dirLight.shadow.camera.far = 450;
+    this.dirLight.shadow.camera.left = -200;
+    this.dirLight.shadow.camera.right = 300;
+    this.dirLight.shadow.camera.top = 200;
+    this.dirLight.shadow.camera.bottom = -200;
     this.scene.add(this.dirLight);
 
-    // Main Town Ground Plane (-65 to +35 X, -65 to +65 Z)
-    const townFloorGeo = new THREE.PlaneGeometry(100, 130);
+    // FULL ORIGINAL TOWN GROUND PLANE (-120 to +120 X, -120 to +120 Z)
+    const townFloorGeo = new THREE.PlaneGeometry(240, 240);
     this.floorMat = new THREE.MeshStandardMaterial({
       color: 0x2e4232,
       roughness: 0.85,
       metalness: 0.1
     });
     const townFloor = new THREE.Mesh(townFloorGeo, this.floorMat);
-    townFloor.position.set(-15, 0, 0);
+    townFloor.position.set(0, 0, 0);
     townFloor.rotation.x = -Math.PI / 2;
     townFloor.receiveShadow = true;
     this.scene.add(townFloor);
 
-    // Grid Overlay for Town Arena
-    this.gridHelper = new THREE.GridHelper(130, 60, 0x00ff88, 0x1f2e24);
-    this.gridHelper.position.set(-15, 0.02, 0);
+    // Grid Overlay for Full Town Arena
+    this.gridHelper = new THREE.GridHelper(240, 60, 0x00ff88, 0x1f2e24);
+    this.gridHelper.position.set(0, 0.02, 0);
     this.gridHelper.material.transparent = true;
     this.gridHelper.material.opacity = 0.18;
     this.scene.add(this.gridHelper);
@@ -201,38 +201,38 @@ export class Environment {
   }
 
   createWoodlandForest() {
-    // 1. Woodland Mossy Forest Ground (X: 35 to 88, Z: -65 to +65)
-    const forestFloorGeo = new THREE.PlaneGeometry(53, 130);
+    // 1. Woodland Mossy Forest Ground (X: 120 to 200, Z: -120 to +120)
+    const forestFloorGeo = new THREE.PlaneGeometry(80, 240);
     const forestFloorMat = new THREE.MeshStandardMaterial({
       color: 0x1c3a21, // Mossy dark pine forest grass
       roughness: 0.9,
       metalness: 0.05
     });
     const forestFloor = new THREE.Mesh(forestFloorGeo, forestFloorMat);
-    forestFloor.position.set(61.5, 0.01, 0);
+    forestFloor.position.set(160, 0.01, 0);
     forestFloor.rotation.x = -Math.PI / 2;
     forestFloor.receiveShadow = true;
     this.scene.add(forestFloor);
 
     // Forest Transition Dirt Trail
-    const trailGeo = new THREE.PlaneGeometry(53, 14);
+    const trailGeo = new THREE.PlaneGeometry(80, 16);
     const trailMat = new THREE.MeshStandardMaterial({ color: 0x5a4332, roughness: 0.95 });
     const trail = new THREE.Mesh(trailGeo, trailMat);
-    trail.position.set(61.5, 0.03, 0);
+    trail.position.set(160, 0.03, 0);
     trail.rotation.x = -Math.PI / 2;
     trail.receiveShadow = true;
     this.scene.add(trail);
 
-    // 2. 3D Procedural Pine Trees (45 trees)
+    // 2. 3D Procedural Pine Trees (75 trees)
     const trunkMat = new THREE.MeshStandardMaterial({ color: 0x4a3219, roughness: 0.9 });
     const leafColors = [0x1a4023, 0x24542d, 0x15361d];
 
-    for (let i = 0; i < 48; i++) {
-      const tx = 38 + Math.random() * 48;
-      const tz = -58 + Math.random() * 116;
+    for (let i = 0; i < 75; i++) {
+      const tx = 125 + Math.random() * 70;
+      const tz = -112 + Math.random() * 224;
 
       // Keep dirt trail pathway clear near Z = 0
-      if (Math.abs(tz) < 7 && tx < 85) continue;
+      if (Math.abs(tz) < 9 && tx < 190) continue;
 
       const treeGroup = new THREE.Group();
       treeGroup.position.set(tx, 0, tz);
@@ -274,10 +274,10 @@ export class Environment {
     const logMat = new THREE.MeshStandardMaterial({ color: 0x3d2714, roughness: 0.9 });
     const boulderMat = new THREE.MeshStandardMaterial({ color: 0x4a554d, roughness: 0.8 });
 
-    for (let i = 0; i < 8; i++) {
-      const lx = 42 + Math.random() * 42;
-      const lz = -50 + Math.random() * 100;
-      if (Math.abs(lz) < 7) continue;
+    for (let i = 0; i < 12; i++) {
+      const lx = 130 + Math.random() * 60;
+      const lz = -100 + Math.random() * 200;
+      if (Math.abs(lz) < 9) continue;
 
       const log = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.4, 3.5, 8), logMat);
       log.position.set(lx, 0.35, lz);
@@ -288,10 +288,10 @@ export class Environment {
       this.walls.push(log);
     }
 
-    for (let i = 0; i < 10; i++) {
-      const bx = 40 + Math.random() * 45;
-      const bz = -52 + Math.random() * 104;
-      if (Math.abs(bz) < 7) continue;
+    for (let i = 0; i < 14; i++) {
+      const bx = 128 + Math.random() * 65;
+      const bz = -105 + Math.random() * 210;
+      if (Math.abs(bz) < 9) continue;
 
       const boulder = new THREE.Mesh(new THREE.DodecahedronGeometry(0.8 + Math.random() * 0.7, 1), boulderMat);
       boulder.position.set(bx, 0.6, bz);
@@ -306,43 +306,43 @@ export class Environment {
     const rockMat = new THREE.MeshStandardMaterial({ color: 0x2b3844, roughness: 0.85 });
     const snowCapMat = new THREE.MeshStandardMaterial({ color: 0xf4f9ff, roughness: 0.4 });
 
-    // 1. REAL 3D INCLINED MOUNTAIN HILL RAMP (X: 88 to 122, Z: -25 to +25)
-    // Slopes up 4.2m from X=88 to X=122
-    const rampLength = 34; // meters long
-    const rampWidth = 50; // meters wide
-    const rampHeight = 4.2; // meters high
+    // 1. REAL 3D INCLINED MOUNTAIN HILL RAMP (X: 190 to 235, Z: -30 to +30)
+    // Slopes up 5.0m from X=190 to X=235
+    const rampLength = 45; // meters long
+    const rampWidth = 60; // meters wide
+    const rampHeight = 5.0; // meters high
     const angle = Math.atan2(rampHeight, rampLength);
 
     const hillRampGeo = new THREE.BoxGeometry(rampLength + 1, 0.4, rampWidth);
     const hillRamp = new THREE.Mesh(hillRampGeo, snowMat);
-    hillRamp.position.set(105, rampHeight / 2, 0);
+    hillRamp.position.set(212.5, rampHeight / 2, 0);
     hillRamp.rotation.z = angle; // Real 3D Incline Angle!
     hillRamp.receiveShadow = true;
     this.scene.add(hillRamp);
 
     // Mountain Dirt/Snow Trail Ramp Center Line
-    const trailRampGeo = new THREE.BoxGeometry(rampLength + 1, 0.42, 12);
+    const trailRampGeo = new THREE.BoxGeometry(rampLength + 1, 0.42, 16);
     const trailRampMat = new THREE.MeshStandardMaterial({ color: 0x8a9ba8, roughness: 0.9 });
     const trailRamp = new THREE.Mesh(trailRampGeo, trailRampMat);
-    trailRamp.position.set(105, rampHeight / 2 + 0.01, 0);
+    trailRamp.position.set(212.5, rampHeight / 2 + 0.01, 0);
     trailRamp.rotation.z = angle;
     trailRamp.receiveShadow = true;
     this.scene.add(trailRamp);
 
-    // 2. ELEVATED MOUNTAIN PLATEAU (X: 122 to 145, Z: -65 to +65) at Height Y = 4.2
-    const plateauGeo = new THREE.BoxGeometry(25, 4.2, 130);
+    // 2. ELEVATED MOUNTAIN PLATEAU (X: 235 to 280, Z: -120 to +120) at Height Y = 5.0
+    const plateauGeo = new THREE.BoxGeometry(45, 5.0, 240);
     const plateau = new THREE.Mesh(plateauGeo, snowMat);
-    plateau.position.set(134.5, 2.1, 0);
+    plateau.position.set(257.5, 2.5, 0);
     plateau.receiveShadow = true;
     this.scene.add(plateau);
 
     // 3. FLANKING MOUNTAIN RIDGE ROCKS (Forming a mountain pass gorge)
     const ridgePositions = [
-      { x: 135, z: -45, w: 22, h: 10.0, d: 35 },
-      { x: 135, z: 45, w: 22, h: 10.0, d: 35 },
-      { x: 143, z: 0, w: 10, h: 12.0, d: 50 },
-      { x: 108, z: -48, w: 28, h: 7.5, d: 24 },
-      { x: 108, z: 48, w: 28, h: 7.5, d: 24 }
+      { x: 245, z: -70, w: 35, h: 12.0, d: 70 },
+      { x: 245, z: 70, w: 35, h: 12.0, d: 70 },
+      { x: 275, z: 0, w: 14, h: 14.0, d: 80 },
+      { x: 205, z: -80, w: 45, h: 9.0, d: 45 },
+      { x: 205, z: 80, w: 45, h: 9.0, d: 45 }
     ];
 
     for (const r of ridgePositions) {
@@ -361,37 +361,37 @@ export class Environment {
       this.scene.add(snowCap);
     }
 
-    // 4. THE YETI GLACIAL CAVE LAIR ATOP THE MOUNTAIN PLATEAU (X: 132, Z: 0, Y: 4.2)
+    // 4. THE YETI GLACIAL CAVE LAIR ATOP THE MOUNTAIN PLATEAU (X: 265, Z: 0, Y: 5.0)
     const caveGroup = new THREE.Group();
-    caveGroup.position.set(132, 4.2, 0);
+    caveGroup.position.set(265, 5.0, 0);
 
     // Dark Cavernous Entrance Interior
     const cavernInterior = new THREE.Mesh(
-      new THREE.BoxGeometry(10, 7, 12),
+      new THREE.BoxGeometry(12, 8, 14),
       new THREE.MeshBasicMaterial({ color: 0x03060a })
     );
-    cavernInterior.position.set(4, 3.5, 0);
+    cavernInterior.position.set(5, 4, 0);
     caveGroup.add(cavernInterior);
 
     // Cave Stone Archway Pillars
-    const archPillarLeft = new THREE.Mesh(new THREE.BoxGeometry(4, 7, 4), rockMat);
-    archPillarLeft.position.set(0, 3.5, -4.5);
+    const archPillarLeft = new THREE.Mesh(new THREE.BoxGeometry(5, 8, 5), rockMat);
+    archPillarLeft.position.set(0, 4, -5.5);
     archPillarLeft.castShadow = true;
     caveGroup.add(archPillarLeft);
 
-    const archPillarRight = new THREE.Mesh(new THREE.BoxGeometry(4, 7, 4), rockMat);
-    archPillarRight.position.set(0, 3.5, 4.5);
+    const archPillarRight = new THREE.Mesh(new THREE.BoxGeometry(5, 8, 5), rockMat);
+    archPillarRight.position.set(0, 4, 5.5);
     archPillarRight.castShadow = true;
     caveGroup.add(archPillarRight);
 
-    const archLintel = new THREE.Mesh(new THREE.BoxGeometry(4, 3.5, 13), rockMat);
-    archLintel.position.set(0, 7.25, 0);
+    const archLintel = new THREE.Mesh(new THREE.BoxGeometry(5, 4, 16), rockMat);
+    archLintel.position.set(0, 8.5, 0);
     archLintel.castShadow = true;
     caveGroup.add(archLintel);
 
     // Snow Mantle on Archway
-    const archSnow = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.8, 13.6), snowCapMat);
-    archSnow.position.set(0, 9.2, 0);
+    const archSnow = new THREE.Mesh(new THREE.BoxGeometry(5.6, 1.0, 16.6), snowCapMat);
+    archSnow.position.set(0, 10.8, 0);
     caveGroup.add(archSnow);
 
     // Glowing Cyan Ice Stalagmites & Crystals framing entrance
@@ -405,17 +405,17 @@ export class Environment {
       opacity: 0.9
     });
 
-    for (let i = 0; i < 6; i++) {
-      const crystal = new THREE.Mesh(new THREE.ConeGeometry(0.4, 2.2 + (i % 3) * 0.5, 5), crystalMat);
-      const side = (i % 2 === 0) ? -3.2 : 3.2;
-      crystal.position.set(-0.5, 1.1 + (i % 3) * 0.2, side + Math.floor(i / 2) * 0.8 - 0.8);
+    for (let i = 0; i < 8; i++) {
+      const crystal = new THREE.Mesh(new THREE.ConeGeometry(0.5, 2.8 + (i % 3) * 0.6, 5), crystalMat);
+      const side = (i % 2 === 0) ? -4.0 : 4.0;
+      crystal.position.set(-0.6, 1.4 + (i % 3) * 0.2, side + Math.floor(i / 2) * 1.0 - 1.5);
       crystal.rotation.z = (i % 2 === 0) ? 0.2 : -0.2;
       caveGroup.add(crystal);
     }
 
     // Glowing Ice Light inside Cave
-    const caveLight = new THREE.PointLight(0x00e5ff, 3.5, 20);
-    caveLight.position.set(2, 4, 0);
+    const caveLight = new THREE.PointLight(0x00e5ff, 4.0, 25);
+    caveLight.position.set(3, 5, 0);
     caveGroup.add(caveLight);
 
     this.scene.add(caveGroup);
@@ -436,9 +436,9 @@ export class Environment {
       { x: 25, z: 5 },
       { x: -28, z: -25 },
       // Woodland Barrels
-      { x: 55, z: 15 },
-      { x: 72, z: -18 },
-      { x: 88, z: 10 }
+      { x: 145, z: 20 },
+      { x: 172, z: -25 },
+      { x: 188, z: 15 }
     ];
 
     for (const pos of positions) {
@@ -631,10 +631,10 @@ export class Environment {
       }
     }
 
-    // 2. Mountain Snow Particle FX in Woodland & Mountain regions (X > 35)
-    if (playerPos && playerPos.x > 35 && particles) {
+    // 2. Mountain Snow Particle FX in Woodland & Mountain regions (X > 120)
+    if (playerPos && playerPos.x > 120 && particles) {
       particles.createSparkle(
-        new THREE.Vector3(playerPos.x + (Math.random() - 0.5) * 20, 2 + Math.random() * 4, playerPos.z + (Math.random() - 0.5) * 20),
+        new THREE.Vector3(playerPos.x + (Math.random() - 0.5) * 25, 2 + Math.random() * 5, playerPos.z + (Math.random() - 0.5) * 25),
         0xe0f7fa,
         1
       );
@@ -656,14 +656,14 @@ export class Environment {
     this.isDay = true;
     this.scene.background.setHex(0x78a6db);
     this.scene.fog.color.setHex(0x78a6db);
-    this.scene.fog.density = 0.0025;
+    this.scene.fog.density = 0.002;
 
     this.ambientLight.color.setHex(0xffffff);
     this.ambientLight.intensity = 0.95;
 
     this.dirLight.color.setHex(0xfff5ea);
     this.dirLight.intensity = 1.25;
-    this.dirLight.position.set(50, 100, 30);
+    this.dirLight.position.set(80, 120, 40);
 
     this.floorMat.color.setHex(0x2e4232);
     this.gridHelper.material.opacity = 0.18;
@@ -681,15 +681,15 @@ export class Environment {
       metalness: 0.2
     });
 
-    const height = 7;
-    const thickness = 3;
+    const height = 8;
+    const thickness = 4;
 
-    // Expanded Map Bounds: X [-65 to +145], Z [-65 to +65]
+    // Huge Map Bounds: X [-120 to +280], Z [-120 to +120]
     const wallPositions = [
-      { x: 40, z: -65, w: 210, d: thickness }, // North Wall
-      { x: 40, z: 65, w: 210, d: thickness },  // South Wall
-      { x: -65, z: 0, w: thickness, d: 130 },  // West Wall
-      { x: 145, z: 0, w: thickness, d: 130 }   // East Mountain Wall
+      { x: 80, z: -120, w: 400, d: thickness }, // North Wall (400m long!)
+      { x: 80, z: 120, w: 400, d: thickness },  // South Wall (400m long!)
+      { x: -120, z: 0, w: thickness, d: 240 },  // West Town Wall
+      { x: 280, z: 0, w: thickness, d: 240 }   // East Mountain Wall
     ];
 
     for (const p of wallPositions) {
@@ -713,9 +713,9 @@ export class Environment {
     });
 
     // Decorative Sandbag & Cover Barricades in Town
-    for (let i = 0; i < 10; i++) {
-      const angle = (i * Math.PI * 2) / 10;
-      const dist = 14 + (i % 3) * 6;
+    for (let i = 0; i < 12; i++) {
+      const angle = (i * Math.PI * 2) / 12;
+      const dist = 16 + (i % 3) * 8;
       const ox = Math.cos(angle) * dist;
       const oz = Math.sin(angle) * dist;
 

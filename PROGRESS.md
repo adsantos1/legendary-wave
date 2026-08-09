@@ -42,9 +42,10 @@
   - [x] **Supply Hangar Armory** at `(-26, 22)` ($18 \times 16$, industrial corrugated steel, steel shelves, cyan industrial light)
   - [x] **Brick Watchtower Refuge** at `(24, -22)` ($14 \times 14$, reinforced red brick, tactical table, warm yellow light)
   - [x] **Dynamic Roof Disappear Mechanics**: All roofs smoothly fade to 0% opacity when hero enters any building doorway!
-- [x] **Seamless Right-Side World Expansion**:
-  - [x] **Woodland Forest Region** ($X: 35 \text{ to } 95$): Mossy forest floor, dirt trail, 45+ 3D procedural pine trees, fallen wooden logs, and mossy boulders.
-  - [x] **Glacial Mountain Yeti Cave Lair** ($X: 95 \text{ to } 145$): Elevated rocky snow peaks, stone cave archway ($X = 132$), glowing cyan ice stalagmites & crystals, and mountain snowfall particles.
+- [x] **Huge Seamless World Map ($400\text{m} \times 240\text{m}$)**:
+  - [x] **Full Original Town Arena** ($X: -120 \text{ to } +120$, $Z: -120 \text{ to } +120$): Full $240\text{m} \times 240\text{m}$ town space with all 4 enterable buildings, barricades, and explosive barrels restored!
+  - [x] **Woodland Forest Region** ($X: 120 \text{ to } 200$): Mossy forest floor, dirt trail, 75+ 3D procedural pine trees, fallen wooden logs, and mossy boulders.
+  - [x] **Glacial Mountain Peak & 3D Yeti Sloped Path** ($X: 200 \text{ to } 280$): 45m sloped snow hill ramp ($X = 190 \text{ to } 235$), elevated plateau ($Y = 5.0\text{m}$), stone Yeti Cave Archway ($X = 265$), glowing ice crystals, and snowfall particles.
 
 ---
 
