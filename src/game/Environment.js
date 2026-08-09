@@ -136,11 +136,11 @@ export class Environment {
   }
 
   getTerrainHeight(x, z) {
-    // 3D Sloped Mountain Hill Path (X: 175 to 220, Z: -30 to +30)
-    if (x >= 175 && x <= 220 && Math.abs(z) <= 30) {
-      const progress = (x - 175) / 45;
+    // 3D Sloped Mountain Hill Path (X: 140 to 180, Z: -30 to +30)
+    if (x >= 140 && x <= 180 && Math.abs(z) <= 30) {
+      const progress = (x - 140) / 40;
       return progress * 5.0; // Smooth incline up to Y = 5.0m!
-    } else if (x > 220) {
+    } else if (x > 180) {
       return 5.0; // Elevated Yeti Mountain Plateau
     }
     return 0.0;
@@ -201,38 +201,38 @@ export class Environment {
   }
 
   createWoodlandForest() {
-    // 1. Woodland Mossy Forest Ground (X: 110 to 185, Z: -110 to +110)
-    const forestFloorGeo = new THREE.PlaneGeometry(75, 220);
+    // 1. Compact Woodland Mossy Forest Ground (X: 110 to 148, Z: -110 to +110)
+    const forestFloorGeo = new THREE.PlaneGeometry(38, 220);
     const forestFloorMat = new THREE.MeshStandardMaterial({
       color: 0x1c3a21, // Mossy dark pine forest grass
       roughness: 0.9,
       metalness: 0.05
     });
     const forestFloor = new THREE.Mesh(forestFloorGeo, forestFloorMat);
-    forestFloor.position.set(147.5, 0.01, 0);
+    forestFloor.position.set(129, 0.01, 0);
     forestFloor.rotation.x = -Math.PI / 2;
     forestFloor.receiveShadow = true;
     this.scene.add(forestFloor);
 
     // Forest Transition Dirt Trail
-    const trailGeo = new THREE.PlaneGeometry(75, 16);
+    const trailGeo = new THREE.PlaneGeometry(38, 16);
     const trailMat = new THREE.MeshStandardMaterial({ color: 0x5a4332, roughness: 0.95 });
     const trail = new THREE.Mesh(trailGeo, trailMat);
-    trail.position.set(147.5, 0.03, 0);
+    trail.position.set(129, 0.03, 0);
     trail.rotation.x = -Math.PI / 2;
     trail.receiveShadow = true;
     this.scene.add(trail);
 
-    // 2. 3D Procedural Pine Trees (65 trees)
+    // 2. 3D Procedural Pine Trees (40 trees compact)
     const trunkMat = new THREE.MeshStandardMaterial({ color: 0x4a3219, roughness: 0.9 });
     const leafColors = [0x1a4023, 0x24542d, 0x15361d];
 
-    for (let i = 0; i < 65; i++) {
-      const tx = 115 + Math.random() * 65;
+    for (let i = 0; i < 42; i++) {
+      const tx = 113 + Math.random() * 32;
       const tz = -102 + Math.random() * 204;
 
       // Keep dirt trail pathway clear near Z = 0
-      if (Math.abs(tz) < 9 && tx < 175) continue;
+      if (Math.abs(tz) < 9 && tx < 140) continue;
 
       const treeGroup = new THREE.Group();
       treeGroup.position.set(tx, 0, tz);
@@ -274,8 +274,8 @@ export class Environment {
     const logMat = new THREE.MeshStandardMaterial({ color: 0x3d2714, roughness: 0.9 });
     const boulderMat = new THREE.MeshStandardMaterial({ color: 0x4a554d, roughness: 0.8 });
 
-    for (let i = 0; i < 10; i++) {
-      const lx = 120 + Math.random() * 55;
+    for (let i = 0; i < 6; i++) {
+      const lx = 115 + Math.random() * 28;
       const lz = -90 + Math.random() * 180;
       if (Math.abs(lz) < 9) continue;
 
@@ -288,8 +288,8 @@ export class Environment {
       this.walls.push(log);
     }
 
-    for (let i = 0; i < 12; i++) {
-      const bx = 118 + Math.random() * 60;
+    for (let i = 0; i < 8; i++) {
+      const bx = 114 + Math.random() * 30;
       const bz = -95 + Math.random() * 190;
       if (Math.abs(bz) < 9) continue;
 
@@ -306,16 +306,16 @@ export class Environment {
     const rockMat = new THREE.MeshStandardMaterial({ color: 0x2b3844, roughness: 0.85 });
     const snowCapMat = new THREE.MeshStandardMaterial({ color: 0xf4f9ff, roughness: 0.4 });
 
-    // 1. REAL 3D INCLINED MOUNTAIN HILL RAMP (X: 175 to 220, Z: -30 to +30)
-    // Slopes up 5.0m from X=175 to X=220
-    const rampLength = 45; // meters long
+    // 1. REAL 3D INCLINED MOUNTAIN HILL RAMP (X: 140 to 180, Z: -30 to +30)
+    // Slopes up 5.0m from X=140 to X=180
+    const rampLength = 40; // meters long
     const rampWidth = 60; // meters wide
     const rampHeight = 5.0; // meters high
     const angle = Math.atan2(rampHeight, rampLength);
 
     const hillRampGeo = new THREE.BoxGeometry(rampLength + 1, 0.4, rampWidth);
     const hillRamp = new THREE.Mesh(hillRampGeo, snowMat);
-    hillRamp.position.set(197.5, rampHeight / 2, 0);
+    hillRamp.position.set(160, rampHeight / 2, 0);
     hillRamp.rotation.z = angle; // Real 3D Incline Angle!
     hillRamp.receiveShadow = true;
     this.scene.add(hillRamp);
@@ -324,25 +324,25 @@ export class Environment {
     const trailRampGeo = new THREE.BoxGeometry(rampLength + 1, 0.42, 16);
     const trailRampMat = new THREE.MeshStandardMaterial({ color: 0x8a9ba8, roughness: 0.9 });
     const trailRamp = new THREE.Mesh(trailRampGeo, trailRampMat);
-    trailRamp.position.set(197.5, rampHeight / 2 + 0.01, 0);
+    trailRamp.position.set(160, rampHeight / 2 + 0.01, 0);
     trailRamp.rotation.z = angle;
     trailRamp.receiveShadow = true;
     this.scene.add(trailRamp);
 
-    // 2. ELEVATED MOUNTAIN PLATEAU (X: 220 to 260, Z: -110 to +110) at Height Y = 5.0
-    const plateauGeo = new THREE.BoxGeometry(40, 5.0, 220);
+    // 2. ELEVATED MOUNTAIN PLATEAU (X: 180 to 215, Z: -110 to +110) at Height Y = 5.0
+    const plateauGeo = new THREE.BoxGeometry(35, 5.0, 220);
     const plateau = new THREE.Mesh(plateauGeo, snowMat);
-    plateau.position.set(240, 2.5, 0);
+    plateau.position.set(197.5, 2.5, 0);
     plateau.receiveShadow = true;
     this.scene.add(plateau);
 
     // 3. FLANKING MOUNTAIN RIDGE ROCKS (Forming a mountain pass gorge)
     const ridgePositions = [
-      { x: 230, z: -65, w: 32, h: 12.0, d: 65 },
-      { x: 230, z: 65, w: 32, h: 12.0, d: 65 },
-      { x: 255, z: 0, w: 12, h: 14.0, d: 75 },
-      { x: 190, z: -75, w: 40, h: 9.0, d: 40 },
-      { x: 190, z: 75, w: 40, h: 9.0, d: 40 }
+      { x: 190, z: -65, w: 30, h: 12.0, d: 65 },
+      { x: 190, z: 65, w: 30, h: 12.0, d: 65 },
+      { x: 210, z: 0, w: 12, h: 14.0, d: 75 },
+      { x: 155, z: -75, w: 35, h: 9.0, d: 40 },
+      { x: 155, z: 75, w: 35, h: 9.0, d: 40 }
     ];
 
     for (const r of ridgePositions) {
@@ -361,9 +361,9 @@ export class Environment {
       this.scene.add(snowCap);
     }
 
-    // 4. THE YETI GLACIAL CAVE LAIR ATOP THE MOUNTAIN PLATEAU (X: 248, Z: 0, Y: 5.0)
+    // 4. THE YETI GLACIAL CAVE LAIR ATOP THE MOUNTAIN PLATEAU (X: 202, Z: 0, Y: 5.0)
     const caveGroup = new THREE.Group();
-    caveGroup.position.set(248, 5.0, 0);
+    caveGroup.position.set(202, 5.0, 0);
 
     // Dark Cavernous Entrance Interior
     const cavernInterior = new THREE.Mesh(
@@ -436,9 +436,8 @@ export class Environment {
       { x: 25, z: 5 },
       { x: -28, z: -25 },
       // Woodland Barrels
-      { x: 135, z: 20 },
-      { x: 158, z: -25 },
-      { x: 172, z: 15 }
+      { x: 122, z: 18 },
+      { x: 135, z: -20 }
     ];
 
     for (const pos of positions) {
@@ -684,12 +683,12 @@ export class Environment {
     const height = 8;
     const thickness = 4;
 
-    // Tuned 220m Town + Extended World Bounds: X [-110 to +260], Z [-110 to +110]
+    // Compact Woodland + Mountain World Bounds: X [-110 to +215], Z [-110 to +110]
     const wallPositions = [
-      { x: 75, z: -110, w: 370, d: thickness }, // North Wall (370m long!)
-      { x: 75, z: 110, w: 370, d: thickness },  // South Wall (370m long!)
+      { x: 52.5, z: -110, w: 325, d: thickness }, // North Wall (325m long!)
+      { x: 52.5, z: 110, w: 325, d: thickness },  // South Wall (325m long!)
       { x: -110, z: 0, w: thickness, d: 220 },  // West Town Wall
-      { x: 260, z: 0, w: thickness, d: 220 }   // East Mountain Wall
+      { x: 215, z: 0, w: thickness, d: 220 }   // East Mountain Wall
     ];
 
     for (const p of wallPositions) {
