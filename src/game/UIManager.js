@@ -155,9 +155,9 @@ export class UIManager {
 
     ctx.clearRect(0, 0, w, h);
 
-    // Huge World Map Scale (World coordinates X[-120 to 280], Z[-120 to 120])
-    const minX = -120, maxX = 280;
-    const minZ = -120, maxZ = 120;
+    // 220x220 Town + Extended World Map Scale (World coordinates X[-110 to 260], Z[-110 to 110])
+    const minX = -110, maxX = 260;
+    const minZ = -110, maxZ = 110;
     const scaleX = w / (maxX - minX);
     const scaleY = h / (maxZ - minZ);
 
