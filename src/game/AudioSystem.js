@@ -268,17 +268,28 @@ export class AudioSystem {
     if (!this.ctx) return;
     const t = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
+    const filter = this.ctx.createBiquadFilter();
     const gain = this.ctx.createGain();
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
 
     osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(110 + Math.random() * 30, t);
-    osc.frequency.exponentialRampToValueAtTime(75, t + 0.18);
-    gain.gain.setValueAtTime(0.2, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(320, t); // Soft warm low-pass filter
+
+    // Realistic Chopper throttle rev curve (VRRRROOOM!)
+    osc.frequency.setValueAtTime(50, t);
+    osc.frequency.linearRampToValueAtTime(110 + Math.random() * 25, t + 0.22);
+    osc.frequency.exponentialRampToValueAtTime(45, t + 0.55);
+
+    gain.gain.setValueAtTime(0.001, t);
+    gain.gain.linearRampToValueAtTime(0.07, t + 0.15);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+
     osc.start(t);
-    osc.stop(t + 0.18);
+    osc.stop(t + 0.55);
   }
 
   startAmbientSynth() {

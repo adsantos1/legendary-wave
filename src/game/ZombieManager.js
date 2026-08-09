@@ -353,7 +353,7 @@ export class Zombie {
       const dxB = player.pos.x - this.pos.x;
       const dzB = player.pos.z - this.pos.z;
       const distB = Math.sqrt(dxB * dxB + dzB * dzB);
-      if (this.engineSoundTimer > 0.25 && distB < 20) {
+      if (this.engineSoundTimer > (1.0 + Math.random() * 0.4) && distB < 22) {
         this.engineSoundTimer = 0;
         audioSystem.playMotorcycleEngine();
       }
