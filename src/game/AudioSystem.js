@@ -61,7 +61,7 @@ export class AudioSystem {
         osc.type = 'square';
         osc.frequency.setValueAtTime(1200, t);
         osc.frequency.exponentialRampToValueAtTime(80, t + 0.35);
-        gain.gain.setValueAtTime(0.14, t);
+        gain.gain.setValueAtTime(0.06, t);
         gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
         osc.start(t);
         osc.stop(t + 0.35);
@@ -82,7 +82,7 @@ export class AudioSystem {
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(750, t);
         osc.frequency.exponentialRampToValueAtTime(100, t + 0.12);
-        gain.gain.setValueAtTime(0.08, t);
+        gain.gain.setValueAtTime(0.035, t);
         gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
         osc.start(t);
         osc.stop(t + 0.12);
