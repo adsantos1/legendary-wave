@@ -118,15 +118,33 @@ export class AudioSystem {
         osc.stop(t + 0.07);
         break;
 
-      case 'rifle':
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(750, t);
-        osc.frequency.exponentialRampToValueAtTime(100, t + 0.12);
-        gain.gain.setValueAtTime(0.035, t);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+      case 'rifle': {
+        // SOLFEGGIO 528 Hz HARMONIC ASSAULT RIFLE: Warm, human-friendly frequency sweep
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1200, t); // Smooth warmth filter
+
+        // Micro-pitch variation around 528 Hz (+-3% per bullet)
+        const startFreq = 528 + (Math.random() - 0.5) * 30;
+        const endFreq = 110 + (Math.random() - 0.5) * 10;
+
+        osc.type = 'triangle'; // Warm harmonic tone instead of harsh sawtooth
+        osc.frequency.setValueAtTime(startFreq, t);
+        osc.frequency.exponentialRampToValueAtTime(endFreq, t + 0.11);
+
+        // Smooth 2ms attack envelope
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.linearRampToValueAtTime(0.035, t + 0.002);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.11);
+
+        osc.disconnect();
+        osc.connect(filter);
+        filter.connect(gain);
+
         osc.start(t);
-        osc.stop(t + 0.12);
+        osc.stop(t + 0.11);
         break;
+      }
 
       default: // Pistol
         osc.type = 'square';
