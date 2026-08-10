@@ -31,16 +31,33 @@ export class AudioSystem {
     gain.connect(this.ctx.destination);
 
     switch (type) {
-      case 'rpg':
-        // Clean, crisp low-frequency launch (Zero buzz, zero echo)
+      case 'rpg': {
+        // ENHANCED RPG: Micro-Pitch Variation + Gentle Warmth Filter + Smooth Envelope
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(800, t); // Gentle warmth filter (strips harsh high static, zero echo)
+
+        // Micro-pitch variation (+-6% per shot)
+        const startFreq = 135 + Math.random() * 16;
+        const endFreq = 30 + Math.random() * 6;
+
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(140, t);
-        osc.frequency.exponentialRampToValueAtTime(35, t + 0.22);
-        gain.gain.setValueAtTime(0.07, t);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+        osc.frequency.setValueAtTime(startFreq, t);
+        osc.frequency.exponentialRampToValueAtTime(endFreq, t + 0.24);
+
+        // Smooth 3ms attack envelope to prevent digital pops
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.linearRampToValueAtTime(0.065, t + 0.003);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.24);
+
+        osc.disconnect();
+        osc.connect(filter);
+        filter.connect(gain);
+
         osc.start(t);
-        osc.stop(t + 0.22);
+        osc.stop(t + 0.24);
         break;
+      }
 
       case 'flamethrower':
         osc.type = 'sawtooth';
@@ -62,15 +79,33 @@ export class AudioSystem {
         osc.stop(t + 0.22);
         break;
 
-      case 'sniper':
+      case 'sniper': {
+        // ENHANCED PLASMA BEAM: Micro-Pitch Variation + Gentle Laser Warmth + Smooth Envelope
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1100, t); // Strips harsh square-wave screeching
+
+        // Micro-pitch variation (+-5% per beam shot)
+        const startFreq = 950 + Math.random() * 80;
+        const endFreq = 75 + Math.random() * 10;
+
         osc.type = 'square';
-        osc.frequency.setValueAtTime(1200, t);
-        osc.frequency.exponentialRampToValueAtTime(80, t + 0.35);
-        gain.gain.setValueAtTime(0.06, t);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+        osc.frequency.setValueAtTime(startFreq, t);
+        osc.frequency.exponentialRampToValueAtTime(endFreq, t + 0.32);
+
+        // Smooth 3ms attack envelope
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.linearRampToValueAtTime(0.045, t + 0.003);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.32);
+
+        osc.disconnect();
+        osc.connect(filter);
+        filter.connect(gain);
+
         osc.start(t);
-        osc.stop(t + 0.35);
+        osc.stop(t + 0.32);
         break;
+      }
 
       case 'smg':
       case 'minigun':
