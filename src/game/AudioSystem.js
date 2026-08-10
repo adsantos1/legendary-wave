@@ -146,15 +146,32 @@ export class AudioSystem {
         break;
       }
 
-      default: // Pistol
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(850, t);
-        osc.frequency.exponentialRampToValueAtTime(120, t + 0.1);
-        gain.gain.setValueAtTime(0.07, t);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+      default: { // Pistol: 432 Hz Solfeggio Harmonic Acoustic Pitch
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1000, t);
+
+        // Micro-pitch variation around 432 Hz (+-4% per click)
+        const startFreq = 432 + (Math.random() - 0.5) * 36;
+        const endFreq = 90 + (Math.random() - 0.5) * 10;
+
+        osc.type = 'triangle'; // Warm organic tone instead of harsh square wave
+        osc.frequency.setValueAtTime(startFreq, t);
+        osc.frequency.exponentialRampToValueAtTime(endFreq, t + 0.09);
+
+        // Smooth 2ms attack envelope
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.linearRampToValueAtTime(0.05, t + 0.002);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+
+        osc.disconnect();
+        osc.connect(filter);
+        filter.connect(gain);
+
         osc.start(t);
-        osc.stop(t + 0.1);
+        osc.stop(t + 0.09);
         break;
+      }
     }
   }
 
