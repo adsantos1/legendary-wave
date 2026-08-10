@@ -59,15 +59,33 @@ export class AudioSystem {
         break;
       }
 
-      case 'flamethrower':
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(140 + Math.random() * 40, t);
-        osc.frequency.linearRampToValueAtTime(60, t + 0.08);
-        gain.gain.setValueAtTime(0.05, t);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+      case 'flamethrower': {
+        // ENHANCED FLAMETHROWER: Warm Sub-Bass Fire Combustion (Zero Buzz)
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(450, t); // Soft 450Hz cutoff strips harsh buzzing static
+
+        // Continuous flickering flame turbulence
+        const startFreq = 110 + (Math.random() - 0.5) * 30;
+        const endFreq = 35 + (Math.random() - 0.5) * 10;
+
+        osc.type = 'triangle'; // Warm organic fire tone instead of harsh sawtooth
+        osc.frequency.setValueAtTime(startFreq, t);
+        osc.frequency.linearRampToValueAtTime(endFreq, t + 0.09);
+
+        // Smooth attack envelope
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.linearRampToValueAtTime(0.04, t + 0.003);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+
+        osc.disconnect();
+        osc.connect(filter);
+        filter.connect(gain);
+
         osc.start(t);
-        osc.stop(t + 0.08);
+        osc.stop(t + 0.09);
         break;
+      }
 
       case 'shotgun':
         osc.type = 'sawtooth';
