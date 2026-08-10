@@ -95,7 +95,7 @@ export class AudioSystem {
 
         // Smooth 3ms attack envelope
         gain.gain.setValueAtTime(0.001, t);
-        gain.gain.linearRampToValueAtTime(0.045, t + 0.003);
+        gain.gain.linearRampToValueAtTime(0.03, t + 0.003);
         gain.gain.exponentialRampToValueAtTime(0.001, t + 0.32);
 
         osc.disconnect();
